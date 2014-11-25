@@ -279,6 +279,34 @@ public:
     VK_Mips_PCREL_HI16,
     VK_Mips_PCREL_LO16,
 
+    // FIXME: Cloned from Mips. I don't believe we need all this.
+    VK_Nkmm_GPREL,
+    VK_Nkmm_GOT_CALL,
+    VK_Nkmm_GOT16,
+    VK_Nkmm_GOT,
+    VK_Nkmm_ABS_HI,
+    VK_Nkmm_ABS_LO,
+    VK_Nkmm_TLSGD,
+    VK_Nkmm_TLSLDM,
+    VK_Nkmm_DTPREL_HI,
+    VK_Nkmm_DTPREL_LO,
+    VK_Nkmm_GOTTPREL,
+    VK_Nkmm_TPREL_HI,
+    VK_Nkmm_TPREL_LO,
+    VK_Nkmm_GPOFF_HI,
+    VK_Nkmm_GPOFF_LO,
+    VK_Nkmm_GOT_DISP,
+    VK_Nkmm_GOT_PAGE,
+    VK_Nkmm_GOT_OFST,
+    VK_Nkmm_HIGHER,
+    VK_Nkmm_HIGHEST,
+    VK_Nkmm_GOT_HI16,
+    VK_Nkmm_GOT_LO16,
+    VK_Nkmm_CALL_HI16,
+    VK_Nkmm_CALL_LO16,
+    VK_Nkmm_PCREL_HI16,
+    VK_Nkmm_PCREL_LO16,
+
     VK_COFF_IMGREL32 // symbol@imgrel (image-relative)
   };
 

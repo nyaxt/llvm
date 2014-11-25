@@ -308,7 +308,8 @@ enum {
   EM_COGE          = 216, // Cognitive Smart Memory Processor
   EM_COOL          = 217, // iCelero CoolEngine
   EM_NORC          = 218, // Nanoradio Optimized RISC
-  EM_CSR_KALIMBA   = 219  // CSR Kalimba architecture family
+  EM_CSR_KALIMBA   = 219, // CSR Kalimba architecture family
+  EM_NKMM          = 2533,
 };
 
 // Object file classes.
@@ -464,6 +465,47 @@ enum : unsigned {
 // ELF Relocation types for Mips
 enum {
 #include "ELFRelocs/Mips.def"
+};
+
+// FIXME: I don't believe we need this :/
+// Nkmm Specific e_flags
+enum : unsigned {
+  EF_NKMM_NOREORDER = 0x00000001, // Don't reorder instructions
+  EF_NKMM_PIC       = 0x00000002, // Position independent code
+  EF_NKMM_CPIC      = 0x00000004, // Call object with Position independent code
+  EF_NKMM_ABI2      = 0x00000020,
+  EF_NKMM_32BITMODE = 0x00000100,
+  EF_NKMM_NAN2008   = 0x00000400, // Uses IEE 754-2008 NaN encoding
+
+  // ABI flags
+  EF_NKMM_ABI_O32   = 0x00001000, // This file follows the first NKMM 32 bit ABI
+  EF_NKMM_ABI_O64    = 0x00002000, // O32 ABI extended for 64-bit architecture.
+  EF_NKMM_ABI_EABI32 = 0x00003000, // EABI in 32 bit mode.
+  EF_NKMM_ABI_EABI64 = 0x00004000, // EABI in 64 bit mode.
+  EF_NKMM_ABI        = 0x0000f000, // Mask for selecting EF_NKMM_ABI_ variant.
+
+  //ARCH_ASE
+  EF_NKMM_MICRONKMM = 0x02000000, // microNKMM
+  EF_NKMM_ARCH_ASE_M16 =
+                      0x04000000, // Has Nkmm-16 ISA extensions
+  //ARCH
+  EF_NKMM_ARCH_1    = 0x00000000, // NKMM1 instruction set
+  EF_NKMM_ARCH_2    = 0x10000000, // NKMM2 instruction set
+  EF_NKMM_ARCH_3    = 0x20000000, // NKMM3 instruction set
+  EF_NKMM_ARCH_4    = 0x30000000, // NKMM4 instruction set
+  EF_NKMM_ARCH_5    = 0x40000000, // NKMM5 instruction set
+  EF_NKMM_ARCH_32   = 0x50000000, // NKMM32 instruction set per linux not elf.h
+  EF_NKMM_ARCH_64   = 0x60000000, // NKMM64 instruction set per linux not elf.h
+  EF_NKMM_ARCH_32R2 = 0x70000000, // mips32r2
+  EF_NKMM_ARCH_64R2 = 0x80000000, // mips64r2
+  EF_NKMM_ARCH_32R6 = 0x90000000, // mips32r6
+  EF_NKMM_ARCH_64R6 = 0xa0000000, // mips64r6
+  EF_NKMM_ARCH      = 0xf0000000  // Mask for applying EF_NKMM_ARCH_ variant
+};
+
+// ELF Relocation types for Nkmm
+enum {
+#include "ELFRelocs/Nkmm.def"
 };
 
 // Special values for the st_other field in the symbol table entry for MIPS.

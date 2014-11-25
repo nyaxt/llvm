@@ -743,6 +743,7 @@ std::error_code ELFObjectFile<ELFT>::getRelocationValueString(
   case ELF::EM_ARM:
   case ELF::EM_HEXAGON:
   case ELF::EM_MIPS:
+  case ELF::EM_NKMM:
     res = *SymName;
     break;
   default:
@@ -844,6 +845,8 @@ StringRef ELFObjectFile<ELFT>::getFileFormatName() const {
       return "ELF32-hexagon";
     case ELF::EM_MIPS:
       return "ELF32-mips";
+    case ELF::EM_NKMM:
+      return "ELF32-nkmm";
     case ELF::EM_PPC:
       return "ELF32-ppc";
     case ELF::EM_SPARC:
@@ -900,6 +903,8 @@ unsigned ELFObjectFile<ELFT>::getArch() const {
     default:
       report_fatal_error("Invalid ELFCLASS!");
     }
+  case ELF::EM_NKMM:
+    return Triple::nkmm;
   case ELF::EM_PPC:
     return Triple::ppc;
   case ELF::EM_PPC64:

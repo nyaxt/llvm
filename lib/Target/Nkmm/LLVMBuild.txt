@@ -1,0 +1,22 @@
+[common]
+subdirectories = MCTargetDesc TargetInfo
+
+[component_0]
+type = TargetGroup
+name = Nkmm
+parent = Target
+
+[component_1]
+type = Library
+name = NkmmCodeGen
+parent = Nkmm
+required_libraries =
+	CodeGen
+	Core
+	MC
+	NkmmDesc
+	NkmmInfo
+	SelectionDAG
+	Support
+	Target
+add_to_library_groups = Nkmm
