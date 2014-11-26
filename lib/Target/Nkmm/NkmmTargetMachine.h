@@ -27,6 +27,7 @@ class formatted_raw_ostream;
 class NkmmTargetMachine : public LLVMTargetMachine {
   NkmmSubtarget DefaultSubtarget;
   NkmmInstrInfo InstrInfo;
+  std::unique_ptr<TargetLoweringObjectFile> TLOF;
 
   virtual void anchor();
 public:
@@ -39,6 +40,16 @@ public:
   const NkmmSubtarget *getSubtargetImpl() const override {
     return &DefaultSubtarget;
   }
+
+  const NkmmInstrInfo *getInstrInfo() const {
+    return &InstrInfo; 
+  }
+
+  TargetLoweringObjectFile *getObjFileLowering() const override {
+    return TLOF.get();
+  }
+
+  TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
 };
 
 } // End llvm namespace

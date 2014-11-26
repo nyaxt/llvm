@@ -74,7 +74,7 @@ class NkmmInst<dag outs, dag ins, string asmstr, list<dag> pattern,
   let InOperandList  = ins;
 
   let AsmString   = asmstr;
-  let Pattern   = pattern;
+  let Pattern     = pattern;
   let Itinerary   = itin;
 
   field bits<32> SoftFail = 0;
@@ -109,7 +109,7 @@ def ADD : ArithLogicInst<0x0, "+", add, CPURegs, 1>;
 def SUB : ArithLogicInst<0x1, "-", sub, CPURegs, 0>;
 
 def LOAD : NkmmInst<(outs CPURegs:$rc), (ins uimm16:$imm),
-  "$rc <= $imm", [(set CPURegs:$rc, uimm16:$imm)], IIAlu> {
+  "$rc <= $imm", [(set CPURegs:$rc, addr:$imm)], IIAlu> {
   // FIXME: for disasm: let DecoderMethod = "DecodeImm";
 }
 
