@@ -11,6 +11,7 @@ add_public_tablegen_target(NkmmCommonTableGen)
 
 add_llvm_target(NkmmCodeGen
   NkmmAsmPrinter.cpp
+  NkmmFrameLowering.cpp
   NkmmISelDAGToDAG.cpp
   NkmmISelLowering.cpp
   NkmmInstrInfo.cpp

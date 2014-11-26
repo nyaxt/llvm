@@ -16,6 +16,7 @@
 
 #include "NkmmISelLowering.h"
 #include "NkmmInstrInfo.h"
+#include "NkmmFrameLowering.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/MC/MCInstrItineraries.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -34,6 +35,7 @@ class NkmmSubtarget : public NkmmGenSubtargetInfo {
 
   const NkmmTargetMachine &TM;
   NkmmInstrInfo InstrInfo;
+  NkmmFrameLowering FrameLowering;
   NkmmTargetLowering TLInfo;
   const DataLayout DL; // Calculates type size & alignment
 public:
@@ -48,6 +50,10 @@ public:
 
   const NkmmInstrInfo *getInstrInfo() const override {
     return &InstrInfo;
+  }
+
+  const TargetFrameLowering *getFrameLowering() const override {
+    return &FrameLowering;
   }
 
   const NkmmTargetLowering *getTargetLowering() const override {
