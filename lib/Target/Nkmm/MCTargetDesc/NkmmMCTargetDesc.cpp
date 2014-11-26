@@ -13,6 +13,7 @@
 
 #include "NkmmMCTargetDesc.h"
 #include "NkmmMCAsmInfo.h"
+#include "InstPrinter/NkmmInstPrinter.h"
 #include "llvm/MC/MachineLocation.h"
 #include "llvm/MC/MCCodeGenInfo.h"
 #include "llvm/MC/MCELFStreamer.h"
@@ -52,6 +53,27 @@ static MCInstrInfo *createNkmmMCInstrInfo() {
   return X;
 }
 
+/*
+static MCStreamer *
+createMCAsmStreamer(MCContext &Ctx, formatted_raw_ostream &OS,
+                    bool isVerboseAsm, bool useDwarfDirectory,
+                    MCInstPrinter *InstPrint, MCCodeEmitter *CE,
+                    MCAsmBackend *TAB, bool ShowInst) {
+  MCStreamer *S = llvm::createAsmStreamer(
+      Ctx, OS, isVerboseAsm, useDwarfDirectory, InstPrint, CE, TAB, ShowInst);
+  new NkmmTargetAsmStreamer(*S, OS);
+  return S;
+}
+*/
+static MCInstPrinter *createNkmmMCInstPrinter(const Target &T,
+                                              unsigned SyntaxVariant,
+                                              const MCAsmInfo &MAI,
+                                              const MCInstrInfo &MII,
+                                              const MCRegisterInfo &MRI,
+                                              const MCSubtargetInfo &STI) {
+  return new NkmmInstPrinter(MAI, MII, MRI);
+}
+
 extern "C" void LLVMInitializeNkmmTargetMC() {
   RegisterMCAsmInfoFn X(TheNkmmTarget, createNkmmMCAsmInfo);
   /*
@@ -65,12 +87,14 @@ extern "C" void LLVMInitializeNkmmTargetMC() {
                                         createNkmmMCCodeEmitterEB);
   TargetRegistry::RegisterMCObjectStreamer(TheNkmmTarget, createMCStreamer);
   TargetRegistry::RegisterAsmStreamer(TheNkmmTarget, createMCAsmStreamer);
+  */
+  /*
   TargetRegistry::RegisterNullStreamer(TheNkmmTarget, createNkmmNullStreamer);
   TargetRegistry::RegisterMCAsmBackend(TheNkmmTarget,
                                        createNkmmAsmBackendEB32);
   TargetRegistry::RegisterMCSubtargetInfo(TheNkmmTarget,
                                           createNkmmMCSubtargetInfo);
+                                        */
   TargetRegistry::RegisterMCInstPrinter(TheNkmmTarget,
                                         createNkmmMCInstPrinter);
-                                        */
 }

@@ -1,5 +1,5 @@
 [common]
-subdirectories = MCTargetDesc TargetInfo
+subdirectories = MCTargetDesc TargetInfo InstPrinter
 
 [component_0]
 type = TargetGroup
@@ -16,6 +16,7 @@ required_libraries =
 	MC
 	NkmmDesc
 	NkmmInfo
+  NkmmInstPrinter
 	SelectionDAG
 	Support
 	Target
