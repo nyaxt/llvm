@@ -21,18 +21,13 @@ using namespace llvm;
 
 #define DEBUG_TYPE "Nkmm"
 
-// On function prologue, the stack is created by decrementing
-// its pointer. Once decremented, all references are done with positive
-// offset from the stack/frame pointer, using StackGrowsUp enables
-// an easier handling.
-// Using CodeModel::Large enables different CALL behavior.
 NkmmTargetMachine::NkmmTargetMachine(const Target &T, StringRef TT,
                                      StringRef CPU, StringRef FS,
                                      const TargetOptions &Options,
                                      Reloc::Model RM, CodeModel::Model CM,
                                      CodeGenOpt::Level OL)
     : LLVMTargetMachine(T, TT, CPU, FS, Options, RM, CM, OL),
-      DefaultSubtarget(TT, CPU, FS) {
+      DefaultSubtarget(TT, CPU, FS, *this) {
   initAsmInfo();
 }
 
@@ -41,4 +36,5 @@ NkmmTargetMachine::~NkmmTargetMachine() {}
 void NkmmTargetMachine::anchor() {}
 
 extern "C" void LLVMInitializeNkmmTarget() {
+  RegisterTargetMachine<NkmmTargetMachine> X(TheNkmmTarget);
 }

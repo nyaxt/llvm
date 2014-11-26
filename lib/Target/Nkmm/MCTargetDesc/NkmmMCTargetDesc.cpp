@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "NkmmMCTargetDesc.h"
-
+#include "NkmmMCAsmInfo.h"
 #include "llvm/MC/MachineLocation.h"
 #include "llvm/MC/MCCodeGenInfo.h"
 #include "llvm/MC/MCELFStreamer.h"
@@ -36,5 +36,41 @@ using namespace llvm;
 #define GET_REGINFO_MC_DESC
 #include "NkmmGenRegisterInfo.inc"
 
+static MCAsmInfo *createNkmmMCAsmInfo(const MCRegisterInfo &MRI, StringRef TT) {
+  MCAsmInfo *MAI = new NkmmMCAsmInfo(TT);
+
+  unsigned SP = MRI.getDwarfRegNum(Nkmm::SP, true);
+  MCCFIInstruction Inst = MCCFIInstruction::createDefCfa(nullptr, SP, 0);
+  MAI->addInitialFrameState(Inst);
+
+  return MAI;
+}
+
+static MCInstrInfo *createNkmmMCInstrInfo() {
+  MCInstrInfo *X = new MCInstrInfo();
+  InitNkmmMCInstrInfo(X);
+  return X;
+}
+
 extern "C" void LLVMInitializeNkmmTargetMC() {
+  RegisterMCAsmInfoFn X(TheNkmmTarget, createNkmmMCAsmInfo);
+  /*
+  TargetRegistry::RegisterMCCodeGenInfo(TheNkmmTarget,
+                                        createNkmmMCCodeGenInfo);
+                                        */
+  TargetRegistry::RegisterMCInstrInfo(TheNkmmTarget, createNkmmMCInstrInfo);
+  /*
+  TargetRegistry::RegisterMCRegInfo(TheNkmmTarget, createNkmmMCRegisterInfo);
+  TargetRegistry::RegisterMCCodeEmitter(TheNkmmTarget,
+                                        createNkmmMCCodeEmitterEB);
+  TargetRegistry::RegisterMCObjectStreamer(TheNkmmTarget, createMCStreamer);
+  TargetRegistry::RegisterAsmStreamer(TheNkmmTarget, createMCAsmStreamer);
+  TargetRegistry::RegisterNullStreamer(TheNkmmTarget, createNkmmNullStreamer);
+  TargetRegistry::RegisterMCAsmBackend(TheNkmmTarget,
+                                       createNkmmAsmBackendEB32);
+  TargetRegistry::RegisterMCSubtargetInfo(TheNkmmTarget,
+                                          createNkmmMCSubtargetInfo);
+  TargetRegistry::RegisterMCInstPrinter(TheNkmmTarget,
+                                        createNkmmMCInstPrinter);
+                                        */
 }

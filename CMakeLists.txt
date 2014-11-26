@@ -154,20 +154,7 @@ set(LLVM_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 set(LLVM_LIBDIR_SUFFIX "" CACHE STRING "Define suffix of library directory name (32/64)" )
 
 set(LLVM_ALL_TARGETS
-  AArch64
-  ARM
-  CppBackend
-  Hexagon
-  Mips
-  MSP430
   Nkmm
-  NVPTX
-  PowerPC
-  R600
-  Sparc
-  SystemZ
-  X86
-  XCore
   )
 
 # List of targets with JIT support:

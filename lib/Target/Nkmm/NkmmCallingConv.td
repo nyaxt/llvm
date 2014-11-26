@@ -9,7 +9,7 @@
 // This describes the calling conventions for Nkmm architecture.
 //===----------------------------------------------------------------------===//
 
-def RetCC_NkmmAPI : CallingConv<[
+def RetCC_Nkmm : CallingConv<[
   CCIfType<[i32], CCAssignToReg<[R0]>>
 ]>;
 

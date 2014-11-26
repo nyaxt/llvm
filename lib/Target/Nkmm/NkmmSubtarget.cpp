@@ -25,8 +25,13 @@ using namespace llvm;
 
 NkmmSubtarget::NkmmSubtarget(const std::string &TT,
                              const std::string &CPU,
-                             const std::string &FS)
-    : NkmmGenSubtargetInfo(TT, CPU, FS) {
+                             const std::string &FS,
+                             const NkmmTargetMachine &TM)
+    : NkmmGenSubtargetInfo(TT, CPU, FS)
+    , TM(TM)
+    , TLInfo(TM)
+    , DL("e-p:32:32:32-i8:8:32-i16:16:32-i64:64:64-n32")
+{
   ParseSubtargetFeatures("generic", FS);    
 }
 
