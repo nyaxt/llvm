@@ -56,3 +56,5 @@ def CPURegs :
   SP, PC)>;
 
 def GPROut : RegisterClass<"Nkmm", [i32], 32, (add (sub CPURegs, PC))>;
+
+def CPUSPReg : RegisterClass<"Nkmm", [i32], 32, (add SP)>, Unallocatable;

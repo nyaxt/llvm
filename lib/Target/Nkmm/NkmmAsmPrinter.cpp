@@ -53,11 +53,29 @@ using namespace llvm;
 
 void NkmmAsmPrinter::EmitInstruction(const MachineInstr *MI) {
   DEBUG(dbgs() << ">> NkmmAsmPinter::EmitInstruction <<\n");
-  DEBUG(MI->dump());
   NkmmMCInstLower MCInstLowering(*this);
-  MCInst TmpInst;
-  MCInstLowering.Lower(MI, TmpInst);
-  OutStreamer.EmitInstruction(TmpInst, getSubtargetInfo());
+  for (MachineBasicBlock::const_instr_iterator i = MI, end = MI->getParent()->instr_end(); i != end; ++ i) {
+    // DEBUG(i->dump());
+    if (i->getOpcode() == Nkmm::PseudoRET) {
+      emitPseudoRET(OutStreamer, &*i);
+      continue;
+    }
+
+    MCInst TmpInst;
+    MCInstLowering.Lower(i, TmpInst);
+    EmitToStreamer(OutStreamer, TmpInst);
+  }
+}
+
+void NkmmAsmPrinter::emitPseudoRET(MCStreamer &OutStreamer, const MachineInstr *MI) {
+  MCInst TmpInst0;
+  TmpInst0.setOpcode(Nkmm::JMPr);
+
+  MCOperand MCOp;
+  MCOp = MCInstLowering.LowerOperand(MI->getOperand(0));
+  TmpInst0.addOperand(MCOp);
+
+  EmitToStreamer(OutStreamer, TmpInst0);
 }
 
 // Force static initialization.

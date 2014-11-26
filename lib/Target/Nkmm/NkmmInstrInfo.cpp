@@ -34,3 +34,18 @@ NkmmInstrInfo::~NkmmInstrInfo() {}
 const NkmmRegisterInfo &NkmmInstrInfo::getRegisterInfo() const {
   return RI;
 }
+
+bool NkmmInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const {
+  MachineBasicBlock &MBB = *MI->getParent();
+  switch(MI->getDesc().getOpcode()) {
+  default:
+    return false;
+  case Nkmm::RetSP:
+    BuildMI(MBB, MI, MI->getDebugLoc(), get(Nkmm::PseudoRET)).addReg(Nkmm::SP);
+    break;
+  }
+
+  MBB.erase(MI);
+  return true;
+}
+

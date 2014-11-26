@@ -40,6 +40,8 @@ public:
   /// always be able to get register info as well (through this method).
   ///
   virtual const NkmmRegisterInfo &getRegisterInfo() const;
+
+  bool expandPostRAPseudo(MachineBasicBlock::iterator MI) const override;
 };
 
 }

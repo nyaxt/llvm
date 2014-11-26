@@ -112,22 +112,35 @@ class ArithLogicInst<bits<3> op, string opstr, SDNode OpNode,
 def ADD : ArithLogicInst<0x0, "+", add, CPURegs, 1>;
 def SUB : ArithLogicInst<0x1, "-", sub, CPURegs, 0>;
 
-def LOAD : NkmmInst<(outs CPURegs:$rc), (ins uimm16:$imm),
-  "$rc <= $imm", [(set CPURegs:$rc, addr:$imm)], IIAlu> {
+def MOVri : NkmmInst<(outs CPURegs:$dst), (ins uimm16:$imm),
+  "$dst <= $imm", [(set CPURegs:$dst, addr:$imm)], IIAlu> {
   // FIXME: for disasm: let DecoderMethod = "DecodeImm";
 }
 
-def RET : NkmmInstPseudo<(outs), (ins), "nise_ret", [(NkmmRet)]> {
-  let isReturn = 1;
-  let isCodeGenOnly = 1;
+def MOVrr : NkmmInst<(outs CPURegs:$dst), (ins CPURegs:$src),
+  "$dst <= $src", [(set CPURegs:$dst, CPURegs:$src)], IIAlu>;
+
+def JMPr : NkmmInst<(outs), (ins CPURegs:$src),
+  "PC <= $src", [(brind CPURegs:$src)], IIAlu> {
+  let isBranch = 1;
+  let isIndirectBranch = 1;
 }
 
-// def RET : NkmmInstPseudo<(outs), (ins GPROut:$ra), "nise_ret", [(brind GPROut:$ra)]> {
-//   let isReturn = 1;
-//   let isCodeGenOnly = 1;
-//   let hasCtrlDep = 1;
-//   let hasExtraSrcRegAllocReq = 1;
-// }
+def RetSP : NkmmInstPseudo<(outs), (ins), "pseudo_retsp", [(NkmmRet)]> {
+  let isReturn=1;
+  let isTerminator=1;
+  let hasDelaySlot=1;
+  let isBarrier=1;
+  let hasCtrlDep=1;
+}
+
+def PseudoRET : NkmmInst<(outs), (ins CPUSPReg:$target), "nise_ret", [], IIAlu> {
+  let isReturn = 1;
+  let isTerminator = 1;
+  let isBarrier = 1;
+  let hasCtrlDep = 1;
+  let hasDelaySlot = 1;
+  let hasExtraSrcRegAllocReq = 1;
+}
 
 def NOP : NkmmInst<(outs), (ins), "nop", [], IIAlu>;
-

@@ -52,6 +52,8 @@ private:
   // tblgen'erated function.
   bool emitPseudoExpansionLowering(MCStreamer &OutStreamer,
                                    const MachineInstr *MI);
+
+  void emitPseudoRET(MCStreamer &OutStreamer, const MachineInstr *MI);
 };
 
 }
