@@ -64,6 +64,14 @@ NkmmTargetLowering::NkmmTargetLowering(const NkmmTargetMachine &TM)
   computeRegisterProperties();
 }
 
+const char *NkmmTargetLowering::getTargetNodeName(unsigned Opcode) const {
+  switch (Opcode) {
+  case NkmmISD::Call: return "NkmmISD::Call";
+  case NkmmISD::Ret: return "NkmmISD::Ret";
+  default: return nullptr;
+  }
+}
+
 #include "NkmmGenCallingConv.inc"
 
 SDValue NkmmTargetLowering::LowerCallResult(SDValue Chain, SDValue InFlag,

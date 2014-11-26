@@ -48,6 +48,10 @@ namespace llvm {
 
     MVT getScalarShiftAmountTy(EVT LHSTy) const override { return MVT::i32; }
 
+    /// getTargetNodeName - This method returns the name of a target specific
+    //  DAG node.
+    const char *getTargetNodeName(unsigned Opcode) const override;
+
     // Lower Operand helpers
     SDValue LowerCallResult(SDValue Chain, SDValue InFlag,
                             CallingConv::ID CallConv, bool isVarArg,
