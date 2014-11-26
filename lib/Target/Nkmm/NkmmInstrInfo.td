@@ -15,6 +15,10 @@
 // Nkmm profiles and nodes
 //===----------------------------------------------------------------------===//
 
+// Return
+def NkmmRet : SDNode<"NkmmISD::Ret", SDTNone,
+                     [SDNPHasChain, SDNPOptInGlue, SDNPVariadic]>;
+
 //===----------------------------------------------------------------------===//
 // Nkmm Operand, Complex Patterns and Transformations Definitions.
 //===----------------------------------------------------------------------===//
@@ -113,12 +117,17 @@ def LOAD : NkmmInst<(outs CPURegs:$rc), (ins uimm16:$imm),
   // FIXME: for disasm: let DecoderMethod = "DecodeImm";
 }
 
-def RET : NkmmInstPseudo<(outs), (ins GPROut:$ra), "nise_ret", [(brind GPROut:$ra)]> {
+def RET : NkmmInstPseudo<(outs), (ins), "nise_ret", [(NkmmRet)]> {
   let isReturn = 1;
   let isCodeGenOnly = 1;
-  let hasCtrlDep = 1;
-  let hasExtraSrcRegAllocReq = 1;
 }
+
+// def RET : NkmmInstPseudo<(outs), (ins GPROut:$ra), "nise_ret", [(brind GPROut:$ra)]> {
+//   let isReturn = 1;
+//   let isCodeGenOnly = 1;
+//   let hasCtrlDep = 1;
+//   let hasExtraSrcRegAllocReq = 1;
+// }
 
 def NOP : NkmmInst<(outs), (ins), "nop", [], IIAlu>;
 
