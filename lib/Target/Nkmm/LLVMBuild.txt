@@ -11,12 +11,13 @@ type = Library
 name = NkmmCodeGen
 parent = Nkmm
 required_libraries =
+	AsmPrinter
 	CodeGen
 	Core
 	MC
 	NkmmDesc
 	NkmmInfo
-  NkmmInstPrinter
+	NkmmInstPrinter
 	SelectionDAG
 	Support
 	Target

@@ -9,6 +9,10 @@
 // This describes the calling conventions for Nkmm architecture.
 //===----------------------------------------------------------------------===//
 
+def CC_Nkmm : CallingConv<[
+  CCIfType<[i32], CCAssignToReg<[R0, R1, R2, R3]>>
+]>;
+
 def RetCC_Nkmm : CallingConv<[
   CCIfType<[i32], CCAssignToReg<[R0]>>
 ]>;

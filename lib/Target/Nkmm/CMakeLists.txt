@@ -16,6 +16,7 @@ add_llvm_target(NkmmCodeGen
   NkmmISelLowering.cpp
   NkmmInstrInfo.cpp
   NkmmMCInstLower.cpp
+  NkmmMachineFunction.cpp
   NkmmRegisterInfo.cpp
   NkmmSubtarget.cpp
   NkmmTargetMachine.cpp

@@ -98,11 +98,73 @@ SDValue NkmmTargetLowering::LowerCallResult(SDValue Chain, SDValue InFlag,
   return Chain;  
 }
 
+// addLiveIn - This helper function adds the specified physical register to the
+// MachineFunction as a live in value.  It also creates a corresponding
+// virtual register for it.
+static unsigned
+addLiveIn(MachineFunction &MF, unsigned PReg, const TargetRegisterClass *RC)
+{
+  unsigned VReg = MF.getRegInfo().createVirtualRegister(RC);
+  MF.getRegInfo().addLiveIn(PReg, VReg);
+  return VReg;
+}
+
 SDValue NkmmTargetLowering::LowerFormalArguments(
     SDValue Chain, CallingConv::ID CallConv, bool isVarArg,
-    const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl, SelectionDAG &DAG,
+    const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc DL, SelectionDAG &DAG,
     SmallVectorImpl<SDValue> &InVals) const
 {
+  MachineFunction &MF = DAG.getMachineFunction();
+  MachineFrameInfo *MFI = MF.getFrameInfo();
+  NkmmFunctionInfo *NkmmFI = MF.getInfo<NkmmFunctionInfo>();
+
+  // Used with vargs to acumulate store chains.
+  std::vector<SDValue> OutChains;
+
+  // Assign locations to all of the incoming arguments.
+  SmallVector<CCValAssign, 16> ArgLocs;
+  CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), ArgLocs,
+      *DAG.getContext());
+  Function::const_arg_iterator FuncArg =
+    DAG.getMachineFunction().getFunction()->arg_begin();
+
+  CCInfo.AnalyzeFormalArguments(Ins, CC_Nkmm);
+
+  unsigned CurArgIdx = 0;
+  CCInfo.rewindByValRegsInfo();
+
+  for (unsigned i = 0, e = ArgLocs.size(); i != e; ++i) {
+    CCValAssign &VA = ArgLocs[i];
+    std::advance(FuncArg, Ins[i].OrigArgIndex - CurArgIdx);
+    CurArgIdx = Ins[i].OrigArgIndex;
+    EVT ValVT = VA.getValVT();
+    ISD::ArgFlagsTy Flags = Ins[i].Flags;
+    bool IsRegLoc = VA.isRegLoc();
+
+    if (Flags.isByVal()) {
+      llvm_unreachable("struct arg not implemented!");
+      continue;
+    }
+
+    if (!IsRegLoc)
+      llvm_unreachable("recv args from stack not implemented!");
+
+    // Arguments stored on registers
+    MVT RegVT = VA.getLocVT();
+    unsigned ArgReg = VA.getLocReg();
+    const TargetRegisterClass *RC = getRegClassFor(RegVT);
+
+    // Transform the arguments stored on
+    // physical registers into virtual ones
+    unsigned Reg = addLiveIn(DAG.getMachineFunction(), ArgReg, RC);
+    SDValue ArgValue = DAG.getCopyFromReg(Chain, DL, Reg, RegVT);
+
+    if (VA.getLocInfo() != CCValAssign::Full)
+      llvm_unreachable("recv arg with non full val assign not implemented!");
+      
+    InVals.push_back(ArgValue);
+  }
+
   return Chain;  
 }
 
