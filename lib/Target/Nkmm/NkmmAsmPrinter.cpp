@@ -72,11 +72,12 @@ void NkmmAsmPrinter::EmitInstruction(const MachineInstr *MI) {
 
 void NkmmAsmPrinter::emitPseudoRET(MCStreamer &OutStreamer, const MachineInstr *MI) {
   MCInst TmpInst0;
-  TmpInst0.setOpcode(Nkmm::JMPr);
+  TmpInst0.setOpcode(Nkmm::JMPm);
 
-  MCOperand MCOp;
-  MCOp = MCInstLowering.LowerOperand(MI->getOperand(0));
-  TmpInst0.addOperand(MCOp);
+  MCOperand MCOp0;
+  MCOp0 = MCInstLowering.LowerOperand(MI->getOperand(0));
+  TmpInst0.addOperand(MCOp0);
+  TmpInst0.addOperand(MCOperand::CreateImm(0));
 
   EmitToStreamer(OutStreamer, TmpInst0);
 }

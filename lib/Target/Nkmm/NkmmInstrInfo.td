@@ -162,7 +162,13 @@ def JMPr : NkmmInst<(outs), (ins CPURegs:$src),
   let isIndirectBranch = 1;
 }
 
-def RetSP : NkmmInstPseudo<(outs), (ins), "pseudo_retsp", [(NkmmRet)]> {
+def JMPm : NkmmInst<(outs), (ins mem:$addr),
+  "PC <= [$addr]", [(brind (load addrRegWithImmOffset:$addr))], IIAlu> {
+  let isBranch = 1;
+  let isIndirectBranch = 1;
+}
+
+def RetPSP : NkmmInstPseudo<(outs), (ins), "pseudo_retpsp", [(NkmmRet)]> {
   let isReturn=1;
   let isTerminator=1;
   let hasDelaySlot=1;

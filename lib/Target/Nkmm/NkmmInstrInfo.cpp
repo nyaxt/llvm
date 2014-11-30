@@ -40,7 +40,7 @@ bool NkmmInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const {
   switch(MI->getDesc().getOpcode()) {
   default:
     return false;
-  case Nkmm::RetSP:
+  case Nkmm::RetPSP:
     BuildMI(MBB, MI, MI->getDebugLoc(), get(Nkmm::PseudoRET)).addReg(Nkmm::SP);
     break;
   }
