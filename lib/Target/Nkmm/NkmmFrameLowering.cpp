@@ -92,13 +92,9 @@ emitPrologue(MachineFunction &MF) const {
    // Update stack size
   MFI->setStackSize(StackSize);
 
-  /*
-  BuildMI(MBB, MBBI, dl, TII.get(Nkmm::MOVE), Nkmm::T0)
-      .addImm(-StackSize);
-  BuildMI(MBB, MBBI, dl, TII.get(Nkmm::ADD), Nkmm::SP)
+  BuildMI(MBB, MBBI, dl, TII.get(Nkmm::SUBri), Nkmm::SP)
       .addReg(Nkmm::SP)
-      .addReg(Nkmm::T0);
-      */
+      .addImm(StackSize);
 }
 
 void NkmmFrameLowering::
@@ -115,11 +111,7 @@ emitEpilogue(MachineFunction &MF, MachineBasicBlock &MBB) const {
   uint64_t StackSize = MFI->getStackSize();
 
   // Adjust stack.
-  /*
-  BuildMI(MBB, MBBI, dl, TII.get(Nkmm::MOVE), Nkmm::T0)
-      .addImm(StackSize);
-  BuildMI(MBB, MBBI, dl, TII.get(Nkmm::ADD), Nkmm::SP)
+  BuildMI(MBB, MBBI, dl, TII.get(Nkmm::ADDri), Nkmm::SP)
       .addReg(Nkmm::SP)
-      .addReg(Nkmm::T0);
-   */
+      .addImm(StackSize);
 }
