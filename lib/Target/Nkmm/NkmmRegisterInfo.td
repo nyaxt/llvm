@@ -43,6 +43,9 @@ let Namespace = "Nkmm" in {
 
   // PC register
   def PC : NkmmGPRReg<7, "PC">, DwarfRegNum<[7]>;
+  
+  // Status register
+  def ST : NkmmGPRReg<8, "ST">, DwarfRegNum<[8]>;
 }
 
 //===----------------------------------------------------------------------===//
@@ -58,3 +61,7 @@ def CPURegs :
 def GPROut : RegisterClass<"Nkmm", [i32], 32, (add (sub CPURegs, PC))>;
 
 def CPUSPReg : RegisterClass<"Nkmm", [i32], 32, (add SP)>, Unallocatable;
+def CPUSTReg : RegisterClass<"Nkmm", [i32], 32, (add ST)>, Unallocatable {
+  let CopyCost = -1;  // Don't allow copying of status registers.
+  let isAllocatable = 0;
+}

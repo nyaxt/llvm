@@ -31,6 +31,8 @@ namespace llvm {
 
       Call,
       Ret,
+      Compare,
+      BranchConditional,
     };
   }
 
@@ -72,7 +74,11 @@ namespace llvm {
                         const SmallVectorImpl<ISD::OutputArg> &Outs,
                         const SmallVectorImpl<SDValue> &OutVals,
                         SDLoc dl, SelectionDAG &DAG) const override;
+
+    SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
   private:
+    SDValue LowerBR_CC(SDValue Op, SelectionDAG &DAG) const;
+
     // Lower Operand helpers
     SDValue LowerCallResult(SDValue Chain, SDValue InFlag,
                             CallingConv::ID CallConv, bool isVarArg,

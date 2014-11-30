@@ -15,6 +15,7 @@
 #include "NkmmMachineFunction.h"
 #include "NkmmSubtarget.h"
 #include "NkmmTargetMachine.h"
+#include "MCTargetDesc/NkmmBaseInfo.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/CodeGen/CallingConvLower.h"
@@ -47,6 +48,8 @@ NkmmTargetLowering::NkmmTargetLowering(const NkmmTargetMachine &TM)
 
   addRegisterClass(MVT::i32, &Nkmm::CPURegsRegClass);
 
+  setOperationAction(ISD::BR_CC, MVT::i32, Custom);
+
   setLoadExtAction(ISD::EXTLOAD,  MVT::i1,  Promote);
   setLoadExtAction(ISD::EXTLOAD,  MVT::i8,  Promote);
   setLoadExtAction(ISD::EXTLOAD,  MVT::i16, Promote);
@@ -68,6 +71,8 @@ const char *NkmmTargetLowering::getTargetNodeName(unsigned Opcode) const {
   switch (Opcode) {
   case NkmmISD::Call: return "NkmmISD::Call";
   case NkmmISD::Ret: return "NkmmISD::Ret";
+  case NkmmISD::Compare: return "NkmmISD::Compare";
+  case NkmmISD::BranchConditional: return "NkmmISD::BranchConditional";
   default: return nullptr;
   }
 }
@@ -235,4 +240,40 @@ SDValue NkmmTargetLowering::LowerReturn(
     RetOps.push_back(Flag);
 
   return DAG.getNode(NkmmISD::Ret, DL, MVT::Other, RetOps);
+}
+
+SDValue NkmmTargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
+  switch (Op.getOpcode()) {
+  default: llvm_unreachable("Don't know how to custom lower this!");
+  case ISD::BR_CC: return LowerBR_CC(Op, DAG);
+  }
+}
+
+/// IntCCToNkmmCC - Convert a DAG integer condition code to an Nkmm CC
+static NkmmCC::CondCodes IntCCToNkmmCC(ISD::CondCode CC) {
+  switch (CC) {
+  default: llvm_unreachable("Unknown condition code!");
+  case ISD::SETNE: return NkmmCC::NE;
+  case ISD::SETEQ: return NkmmCC::EQ;
+  case ISD::SETGT: return NkmmCC::GT;
+  case ISD::SETGE: return NkmmCC::GE;
+  case ISD::SETLT: return NkmmCC::LT;
+  case ISD::SETLE: return NkmmCC::LE;
+  }
+}
+
+SDValue NkmmTargetLowering::LowerBR_CC(SDValue Op, SelectionDAG &DAG) const {
+  SDValue Chain = Op.getOperand(0);
+  ISD::CondCode CC = cast<CondCodeSDNode>(Op.getOperand(1))->get();
+  SDValue LHS = Op.getOperand(2);
+  SDValue RHS = Op.getOperand(3);
+  SDValue Dest = Op.getOperand(4);
+  SDLoc dl(Op);
+
+  assert(LHS.getValueType() == MVT::i32 && "Can only return in registers!");
+
+  SDValue Nkmmcc = DAG.getConstant(IntCCToNkmmCC(CC), MVT::i32);
+  SDValue Cmp = DAG.getNode(NkmmISD::Compare, dl, MVT::Glue, LHS, RHS);
+  SDValue CCR = DAG.getRegister(Nkmm::ST, MVT::i32);
+  return DAG.getNode(NkmmISD::BranchConditional, dl, MVT::Other, Chain, Dest, Nkmmcc, CCR, Cmp);
 }

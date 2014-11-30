@@ -30,6 +30,14 @@ def uimm16 : Operand<i32> {
 
 def uimm16Pat : PatLeaf<(imm), [{ return isInt<16>(N->getZExtValue()); }]>;
 
+def jmpriTarget    : Operand<OtherVT> {
+  //let EncoderMethod = "getBranchTargetOpValue";
+  let OperandType = "OPERAND_PCREL";
+  // let PrintMethod = 
+  //let DecoderMethod = "DecodeBranchTarget";
+  //let ParserMatchClass = NkmmJumpTargetAsmOperand;
+}
+
 def NkmmMemAsmOperand : AsmOperandClass {
   let Name = "Mem";
   let ParserMethod = "parseMemOperand";
@@ -154,6 +162,13 @@ def STORE : NkmmInst<(outs), (ins CPURegs:$src, mem:$addr),
   "[$addr] <= $src", [(store CPURegs:$src, addrRegWithImmOffset:$addr)], IIAlu> {
   let DecoderMethod = "DecodeMem";
   let mayStore  = 1;
+}
+
+def JMPri : NkmmInst<(outs), (ins jmpriTarget:$offset), "PC <= +$offset", [(br bb:$offset)], IIAlu> {
+  let isBranch = 1;
+  let isTerminator = 1;
+  let isBarrier = 1;
+  let hasDelaySlot = 1;
 }
 
 def JMPr : NkmmInst<(outs), (ins CPURegs:$src),
