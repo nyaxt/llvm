@@ -84,24 +84,32 @@ private:
   SDNode *Select(SDNode *N) /*override*/;
 
   // Complex Pattern.
-  bool SelectAddr(SDValue N, SDValue &Base, SDValue &Offset);
+  bool selectAddrFrameIndex(SDValue Addr, SDValue &Base, SDValue &Offset) const;
+  bool selectAddrRegWithImmOffset(SDValue Addr, SDValue &Base, SDValue &Offset) const;
 };
+}
+
+bool NkmmDAGToDAGISel::selectAddrFrameIndex(SDValue Addr, SDValue &Base,
+    SDValue &Offset) const {
+  if (FrameIndexSDNode *FIN = dyn_cast<FrameIndexSDNode>(Addr)) {
+    EVT ValTy = Addr.getValueType();
+
+    Base   = CurDAG->getTargetFrameIndex(FIN->getIndex(), ValTy);
+    Offset = CurDAG->getTargetConstant(0, ValTy);
+    return true;
+  }
+  return false;
 }
 
 /// ComplexPattern used on NkmmInstrInfo
 /// Used on Nkmm Load/Store instructions
 bool NkmmDAGToDAGISel::
-SelectAddr(SDValue N, SDValue &Base, SDValue &Offset) {
-  EVT ValTy = N.getValueType();
-
-  if (FrameIndexSDNode *FIN = dyn_cast<FrameIndexSDNode>(N)) {
-    Base   = CurDAG->getTargetFrameIndex(FIN->getIndex(), ValTy);
-    Offset = CurDAG->getTargetConstant(0, ValTy);
+selectAddrRegWithImmOffset(SDValue Addr, SDValue &Base, SDValue &Offset) const {
+  if (selectAddrFrameIndex(Addr, Base, Offset))
     return true;
-  }
 
   llvm_unreachable("Unknown pattern");
-  return true;
+  return false;
 }
 
 /// Select instructions not customized! Used for

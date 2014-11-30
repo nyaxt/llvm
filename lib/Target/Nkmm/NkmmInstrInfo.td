@@ -30,16 +30,23 @@ def uimm16 : Operand<i32> {
 
 def uimm16Pat : PatLeaf<(imm), [{ return isInt<16>(N->getZExtValue()); }]>;
 
-def mem : Operand<i32> {
+def NkmmMemAsmOperand : AsmOperandClass {
+  let Name = "Mem";
+  let ParserMethod = "parseMemOperand";
+}
+
+def mem : Operand<iPTR> {
   let PrintMethod = "printMemOperand";
   let MIOperandInfo = (ops CPURegs, uimm16);
   let EncoderMethod = "getMemEncoding";
+  let ParserMatchClass = NkmmMemAsmOperand;
+  let OperandType = "OPERAND_MEMORY";
 }
 
 // Nkmm Address Mode! SDNode frameindex could possibily be a match
 // since load and store instructions from stack used it.
-def addr :
-  ComplexPattern<iPTR, 2, "SelectAddr", [frameindex]>;
+def addrRegWithImmOffset :
+  ComplexPattern<iPTR, 2, "selectAddrRegWithImmOffset", []>;
 
 class IsCommutable {
   bit isCommutable = 1;
@@ -99,7 +106,7 @@ class NkmmInstPseudo<dag outs, dag ins, string asmstr, list<dag> pattern>
 class ArithLogicInst<bits<3> op, string opstr, SDNode OpNode,
   RegisterClass RC, bit isComm = 0>
   : NkmmInst<(outs RC:$rc), (ins RC:$ra, RC:$rb),
-    !strconcat("$rc <= $ra ", opstr, " $rc"),
+    !strconcat("$rc <= $ra ", opstr, " $rb"),
     [(set RC:$rc, (OpNode RC:$ra, RC:$rb))], IIAlu> {
   let isReMaterializable = 1;
   let isCommutable = isComm;
@@ -123,6 +130,18 @@ def MOVrr : NkmmInst<(outs CPURegs:$dst), (ins CPURegs:$src),
   "$dst <= $src", [(set CPURegs:$dst, CPURegs:$src)], IIAlu> {
   let ImmEn = 1;
   let ALUSel = 0x0;
+}
+
+def LOAD : NkmmInst<(outs CPURegs:$dst), (ins mem:$addr),
+  "$dst <= [$addr]", [(set CPURegs:$dst, (load addrRegWithImmOffset:$addr))], IIAlu> {
+  let DecoderMethod = "DecodeMem";
+  let canFoldAsLoad = 1;
+  let mayLoad = 1;
+}
+def STORE : NkmmInst<(outs), (ins CPURegs:$src, mem:$addr),
+  "[$addr] <= $src", [(store CPURegs:$src, addrRegWithImmOffset:$addr)], IIAlu> {
+  let DecoderMethod = "DecodeMem";
+  let mayStore  = 1;
 }
 
 def JMPr : NkmmInst<(outs), (ins CPURegs:$src),

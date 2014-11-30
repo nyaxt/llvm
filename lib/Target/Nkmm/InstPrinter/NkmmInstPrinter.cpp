@@ -54,3 +54,11 @@ void NkmmInstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
   //printExpr(Op.getExpr(), O);
   O << *Op.getExpr();
 }
+
+void NkmmInstPrinter::printMemOperand(const MCInst *MI, unsigned OpNo,
+    raw_ostream &O) {
+  const MCOperand &Op = MI->getOperand(OpNo);
+  printOperand(MI, OpNo, O);
+  O << "+";
+  printOperand(MI, OpNo+1, O);
+}
