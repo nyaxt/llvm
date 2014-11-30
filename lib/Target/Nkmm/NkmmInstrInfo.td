@@ -15,9 +15,18 @@
 // Nkmm profiles and nodes
 //===----------------------------------------------------------------------===//
 
+
+def SDT_NkmmBranchConditional :
+    SDTypeProfile<0, 3,
+    [SDTCisVT<0, OtherVT>, SDTCisVT<1, i32>, SDTCisVT<2, i32>]>;
+
 // Return
 def NkmmRet : SDNode<"NkmmISD::Ret", SDTNone,
                      [SDNPHasChain, SDNPOptInGlue, SDNPVariadic]>;
+
+def NkmmBranchConditional :
+    SDNode<"NkmmISD::BranchConditional", SDT_NkmmBranchConditional,
+    [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue]>;
 
 //===----------------------------------------------------------------------===//
 // Nkmm Operand, Complex Patterns and Transformations Definitions.
@@ -164,7 +173,7 @@ def STORE : NkmmInst<(outs), (ins CPURegs:$src, mem:$addr),
   let mayStore  = 1;
 }
 
-def JMPri : NkmmInst<(outs), (ins jmpriTarget:$offset), "PC <= +$offset", [(br bb:$offset)], IIAlu> {
+def JMPri : NkmmInst<(outs), (ins jmpriTarget:$offset), "PC <= PC + $offset", [(br bb:$offset)], IIAlu> {
   let isBranch = 1;
   let isTerminator = 1;
   let isBarrier = 1;
@@ -175,12 +184,21 @@ def JMPr : NkmmInst<(outs), (ins CPURegs:$src),
   "PC <= $src", [(brind CPURegs:$src)], IIAlu> {
   let isBranch = 1;
   let isIndirectBranch = 1;
+  // let isBarrier = 1;
 }
 
 def JMPm : NkmmInst<(outs), (ins mem:$addr),
   "PC <= [$addr]", [(brind (load addrRegWithImmOffset:$addr))], IIAlu> {
   let isBranch = 1;
   let isIndirectBranch = 1;
+  // let isBarrier = 1;
+}
+
+def Jccri : NkmmInst<(outs), (ins jmpriTarget:$offset, uimm16:$cc, CPUSTReg:$ccr),
+  "if($cc) PC <= PC + $offset", [(NkmmBranchConditional bb:$offset, imm:$cc, CPUSTReg:$ccr)], IIAlu> {
+  let isBranch = 1;
+  let isBarrier = 1;
+  let isTerminator = 1;
 }
 
 def RetPSP : NkmmInstPseudo<(outs), (ins), "pseudo_retpsp", [(NkmmRet)]> {
