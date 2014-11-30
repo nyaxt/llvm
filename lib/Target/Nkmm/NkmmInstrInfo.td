@@ -103,23 +103,35 @@ class NkmmInstPseudo<dag outs, dag ins, string asmstr, list<dag> pattern>
 // Instructions specific format
 //===----------------------------------------------------------------------===//
 
-class ArithLogicInst<bits<3> op, string opstr, SDNode OpNode,
-  RegisterClass RC, bit isComm = 0>
-  : NkmmInst<(outs RC:$rc), (ins RC:$ra, RC:$rb),
+class ArithLogicInstRR<bits<3> op, string opstr, SDNode OpNode, bit isComm = 0>
+  : NkmmInst<(outs CPURegs:$rc), (ins CPURegs:$ra, CPURegs:$rb),
     !strconcat("$rc <= $ra ", opstr, " $rb"),
-    [(set RC:$rc, (OpNode RC:$ra, RC:$rb))], IIAlu> {
+    [(set CPURegs:$rc, (OpNode CPURegs:$ra, CPURegs:$rb))], IIAlu> {
   let isReMaterializable = 1;
   let isCommutable = isComm;
 
   let ALUSel = op;
 }
 
+class ArithLogicInstRI<bits<3> op, string opstr, SDNode OpNode, bit isComm = 0>
+  : NkmmInst<(outs CPURegs:$rc), (ins CPURegs:$ra, uimm16:$imm),
+    !strconcat("$rc <= $ra ", opstr, " $imm"),
+    [(set CPURegs:$rc, (OpNode CPURegs:$ra, uimm16Pat:$imm))], IIAlu> {
+  let isReMaterializable = 1;
+  let isCommutable = isComm;
+
+  let ALUSel = op;
+  let ImmEn = 1;
+}
+
 //===----------------------------------------------------------------------===//
 // Nkmm Instructions
 //===----------------------------------------------------------------------===//
 
-def ADD : ArithLogicInst<0x0, "+", add, CPURegs, 1>;
-def SUB : ArithLogicInst<0x1, "-", sub, CPURegs, 0>;
+def ADDrr : ArithLogicInstRR<0x0, "+", add, 1>;
+def SUBrr : ArithLogicInstRR<0x1, "-", sub, 0>;
+def ADDri : ArithLogicInstRI<0x0, "+", add, 1>;
+def SUBri : ArithLogicInstRI<0x1, "-", sub, 0>;
 
 def MOVri : NkmmInst<(outs CPURegs:$dst), (ins uimm16:$imm),
   "$dst <= $imm", [(set CPURegs:$dst, uimm16Pat:$imm)], IIAlu> {
