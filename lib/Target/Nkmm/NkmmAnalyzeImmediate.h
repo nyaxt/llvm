@@ -1,4 +1,4 @@
-//===-- MipsAnalyzeImmediate.h - Analyze Immediates ------------*- C++ -*--===//
+//===-- NkmmAnalyzeImmediate.h - Analyze Immediates ------------*- C++ -*--===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -14,7 +14,7 @@
 
 namespace llvm {
 
-  class MipsAnalyzeImmediate {
+  class NkmmAnalyzeImmediate {
   public:
     struct Inst {
       unsigned Opc, ImmOpnd;

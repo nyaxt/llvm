@@ -28,6 +28,8 @@ def uimm16 : Operand<i32> {
   let DecoderMethod = "printUnsignedImm";
 }
 
+def uimm16Pat : PatLeaf<(imm), [{ return isInt<16>(N->getZExtValue()); }]>;
+
 def mem : Operand<i32> {
   let PrintMethod = "printMemOperand";
   let MIOperandInfo = (ops CPURegs, uimm16);
@@ -113,12 +115,15 @@ def ADD : ArithLogicInst<0x0, "+", add, CPURegs, 1>;
 def SUB : ArithLogicInst<0x1, "-", sub, CPURegs, 0>;
 
 def MOVri : NkmmInst<(outs CPURegs:$dst), (ins uimm16:$imm),
-  "$dst <= $imm", [(set CPURegs:$dst, addr:$imm)], IIAlu> {
+  "$dst <= $imm", [(set CPURegs:$dst, uimm16Pat:$imm)], IIAlu> {
   // FIXME: for disasm: let DecoderMethod = "DecodeImm";
 }
 
 def MOVrr : NkmmInst<(outs CPURegs:$dst), (ins CPURegs:$src),
-  "$dst <= $src", [(set CPURegs:$dst, CPURegs:$src)], IIAlu>;
+  "$dst <= $src", [(set CPURegs:$dst, CPURegs:$src)], IIAlu> {
+  let ImmEn = 1;
+  let ALUSel = 0x0;
+}
 
 def JMPr : NkmmInst<(outs), (ins CPURegs:$src),
   "PC <= $src", [(brind CPURegs:$src)], IIAlu> {

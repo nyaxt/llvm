@@ -36,7 +36,7 @@
 
 using namespace llvm;
 
-#define DEBUG_TYPE "mips-lower"
+#define DEBUG_TYPE "nkmm-lower"
 
 NkmmTargetLowering::NkmmTargetLowering(const NkmmTargetMachine &TM)
   : TargetLowering(TM)
@@ -140,6 +140,37 @@ SDValue NkmmTargetLowering::LowerReturn(
     const SmallVectorImpl<ISD::OutputArg> &Outs,
     const SmallVectorImpl<SDValue> &OutVals, SDLoc DL, SelectionDAG &DAG) const
 {
+  // CCValAssign - represent the assignment of
+  // the return value to a location
+  SmallVector<CCValAssign, 16> RVLocs;
+  MachineFunction &MF = DAG.getMachineFunction();
+
+  CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), RVLocs,
+      *DAG.getContext());
+  CCInfo.AnalyzeReturn(Outs, RetCC_Nkmm);
+
+  SDValue Flag;
   SmallVector<SDValue, 4> RetOps(1, Chain);
+
+  // Copy the result values into the output registers.
+  for (unsigned i = 0; i != RVLocs.size(); ++i) {
+    SDValue Val = OutVals[i];
+    CCValAssign &VA = RVLocs[i];
+    assert(VA.isRegLoc() && "Can only return in registers!");
+
+    Chain = DAG.getCopyToReg(Chain, DL, VA.getLocReg(), Val, Flag);
+
+    Flag = Chain.getValue(1);
+    RetOps.push_back(DAG.getRegister(VA.getLocReg(), VA.getLocVT()));
+  }
+
+  if (MF.getFunction()->hasStructRetAttr())
+    llvm_unreachable("struct return not implemented!");
+
+  RetOps[0] = Chain;  // Update chain.
+  // Add the flag if we have it.
+  if (Flag.getNode())
+    RetOps.push_back(Flag);
+
   return DAG.getNode(NkmmISD::Ret, DL, MVT::Other, RetOps);
 }

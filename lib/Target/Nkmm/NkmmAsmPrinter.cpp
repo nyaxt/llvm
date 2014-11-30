@@ -52,9 +52,12 @@ using namespace llvm;
 #include "NkmmGenMCPseudoLowering.inc"
 
 void NkmmAsmPrinter::EmitInstruction(const MachineInstr *MI) {
-  DEBUG(dbgs() << ">> NkmmAsmPinter::EmitInstruction <<\n");
+  // DEBUG(dbgs() << ">> NkmmAsmPinter::EmitInstruction <<\n");
   NkmmMCInstLower MCInstLowering(*this);
-  for (MachineBasicBlock::const_instr_iterator i = MI, end = MI->getParent()->instr_end(); i != end; ++ i) {
+
+  MachineBasicBlock::const_instr_iterator i = MI, end = MI->getParent()->instr_end();
+  do {
+    // DEBUG(dbgs() << "loop start\n");
     // DEBUG(i->dump());
     if (i->getOpcode() == Nkmm::PseudoRET) {
       emitPseudoRET(OutStreamer, &*i);
@@ -64,7 +67,7 @@ void NkmmAsmPrinter::EmitInstruction(const MachineInstr *MI) {
     MCInst TmpInst;
     MCInstLowering.Lower(i, TmpInst);
     EmitToStreamer(OutStreamer, TmpInst);
-  }
+  } while ((++i != end) && i->isInsideBundle());
 }
 
 void NkmmAsmPrinter::emitPseudoRET(MCStreamer &OutStreamer, const MachineInstr *MI) {
