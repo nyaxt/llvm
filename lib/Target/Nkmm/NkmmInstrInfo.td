@@ -157,9 +157,11 @@ def SUBri : ArithLogicInstRI<0x1, "-", sub, 0>;
 
 def CMPrr : NkmmInst<(outs), (ins CPURegs:$lhs, CPURegs:$rhs),
   "ST <= CMP($lhs, $rhs)", [(NkmmCompare CPURegs:$lhs, CPURegs:$rhs)], IIAlu> {
+  let Defs = [ST];
 }
 def CMPri : NkmmInst<(outs), (ins CPURegs:$lhs, uimm16:$rhs),
   "ST <= CMP($lhs, $rhs)", [(NkmmCompare CPURegs:$lhs, uimm16Pat:$rhs)], IIAlu> {
+  let Defs = [ST];
 }
 
 def MOVri : NkmmInst<(outs CPURegs:$dst), (ins uimm16:$imm),
