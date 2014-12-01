@@ -15,10 +15,12 @@
 // Nkmm profiles and nodes
 //===----------------------------------------------------------------------===//
 
-
+// Type profiles.
 def SDT_NkmmBranchConditional :
     SDTypeProfile<0, 3,
     [SDTCisVT<0, OtherVT>, SDTCisVT<1, i32>, SDTCisVT<2, i32>]>;
+
+def SDT_NkmmCompare : SDTypeProfile<0, 2, [SDTCisSameAs<0, 1>]>;
 
 // Return
 def NkmmRet : SDNode<"NkmmISD::Ret", SDTNone,
@@ -27,6 +29,9 @@ def NkmmRet : SDNode<"NkmmISD::Ret", SDTNone,
 def NkmmBranchConditional :
     SDNode<"NkmmISD::BranchConditional", SDT_NkmmBranchConditional,
     [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue]>;
+
+def NkmmCompare : SDNode<"NkmmISD::Compare", SDT_NkmmCompare,
+    [SDNPOutGlue]>;
 
 //===----------------------------------------------------------------------===//
 // Nkmm Operand, Complex Patterns and Transformations Definitions.
@@ -149,6 +154,13 @@ def ADDrr : ArithLogicInstRR<0x0, "+", add, 1>;
 def SUBrr : ArithLogicInstRR<0x1, "-", sub, 0>;
 def ADDri : ArithLogicInstRI<0x0, "+", add, 1>;
 def SUBri : ArithLogicInstRI<0x1, "-", sub, 0>;
+
+def CMPrr : NkmmInst<(outs), (ins CPURegs:$lhs, CPURegs:$rhs),
+  "ST <= CMP($lhs, $rhs)", [(NkmmCompare CPURegs:$lhs, CPURegs:$rhs)], IIAlu> {
+}
+def CMPri : NkmmInst<(outs), (ins CPURegs:$lhs, uimm16:$rhs),
+  "ST <= CMP($lhs, $rhs)", [(NkmmCompare CPURegs:$lhs, uimm16Pat:$rhs)], IIAlu> {
+}
 
 def MOVri : NkmmInst<(outs CPURegs:$dst), (ins uimm16:$imm),
   "$dst <= $imm", [(set CPURegs:$dst, uimm16Pat:$imm)], IIAlu> {

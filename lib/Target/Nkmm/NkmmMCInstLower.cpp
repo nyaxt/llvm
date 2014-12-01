@@ -21,8 +21,11 @@
 #include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCExpr.h"
 #include "llvm/MC/MCInst.h"
+#include "llvm/Support/Debug.h"
 
 using namespace llvm;
+
+#define DEBUG_TYPE "nkmm-mcinstlower"
 
 NkmmMCInstLower::NkmmMCInstLower(NkmmAsmPrinter &asmprinter)
   : AsmPrinter(asmprinter) {}
@@ -34,12 +37,10 @@ void NkmmMCInstLower::Initialize(MCContext *C) {
 MCOperand NkmmMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
                                               MachineOperandType MOTy,
                                               unsigned Offset) const {
-  MCSymbolRefExpr::VariantKind Kind;
   const MCSymbol *Symbol;
 
-  switch(MO.getTargetFlags()) {
-  default:                   llvm_unreachable("Invalid target flag!");
-  }
+  // DEBUG(dbgs() << "NkmmMCInstLower::LowerSymbolOperand target flags :" << MO.getTargetFlags() << "\n");
+  assert(MO.getTargetFlags() == 0 && "FIXME: handle MO.getTargetFlags non 0 case");
 
   switch (MOTy) {
   case MachineOperand::MO_MachineBasicBlock:
@@ -74,6 +75,7 @@ MCOperand NkmmMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
     llvm_unreachable("<unknown operand type>");
   }
 
+  MCSymbolRefExpr::VariantKind Kind = MCSymbolRefExpr::VK_None;
   const MCSymbolRefExpr *MCSym = MCSymbolRefExpr::Create(Symbol, Kind, *Ctx);
 
   if (!Offset)
