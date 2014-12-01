@@ -16,6 +16,7 @@
 #include "NkmmRegisterInfo.h"
 #include "NkmmSubtarget.h"
 #include "NkmmTargetMachine.h"
+#include "MCTargetDesc/NkmmBaseInfo.h"
 #include "MCTargetDesc/NkmmMCTargetDesc.h"
 #include "llvm/CodeGen/MachineConstantPool.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"

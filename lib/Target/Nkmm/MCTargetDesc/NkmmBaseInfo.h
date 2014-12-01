@@ -31,6 +31,7 @@ namespace NkmmCC {
     LT,            // Less than                  Less than, or unordered
     GT,            // Greater than               Greater than
     LE,            // Less than or equal         <, ==, or unordered
+    Count
   };
 
   inline static CondCodes getOppositeCondition(CondCodes CC) {

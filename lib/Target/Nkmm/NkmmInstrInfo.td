@@ -39,12 +39,18 @@ def NkmmCompare : SDNode<"NkmmISD::Compare", SDT_NkmmCompare,
 
 // unsigned immediate 16bit
 def uimm16 : Operand<i32> {
-  let DecoderMethod = "printUnsignedImm";
+  // let PrintMethod = "printUnsignedImm";
 }
 
 def uimm16Pat : PatLeaf<(imm), [{ return isInt<16>(N->getZExtValue()); }]>;
 
-def jmpriTarget    : Operand<OtherVT> {
+def condition : Operand<i32> {
+  let PrintMethod = "printCondition";
+} 
+
+def conditionPat : PatLeaf<(imm), [{ return N->getZExtValue() < NkmmCC::Count; }]>;
+
+def jmpiTarget    : Operand<OtherVT> {
   //let EncoderMethod = "getBranchTargetOpValue";
   let OperandType = "OPERAND_PCREL";
   // let PrintMethod = 
@@ -187,7 +193,7 @@ def STORE : NkmmInst<(outs), (ins CPURegs:$src, mem:$addr),
   let mayStore  = 1;
 }
 
-def JMPri : NkmmInst<(outs), (ins jmpriTarget:$offset), "PC <= PC + $offset", [(br bb:$offset)], IIAlu> {
+def JMPi : NkmmInst<(outs), (ins jmpiTarget:$jmptgt), "PC <= $jmptgt", [(br bb:$jmptgt)], IIAlu> {
   let isBranch = 1;
   let isTerminator = 1;
   let isBarrier = 1;
@@ -208,8 +214,8 @@ def JMPm : NkmmInst<(outs), (ins mem:$addr),
   // let isBarrier = 1;
 }
 
-def Jccri : NkmmInst<(outs), (ins jmpriTarget:$offset, uimm16:$cc, CPUSTReg:$ccr),
-  "if($cc) PC <= PC + $offset", [(NkmmBranchConditional bb:$offset, imm:$cc, CPUSTReg:$ccr)], IIAlu> {
+def Jccri : NkmmInst<(outs), (ins jmpiTarget:$jmptgt, condition:$cc, CPUSTReg:$ccr),
+  "if($cc) PC <= $jmptgt", [(NkmmBranchConditional bb:$jmptgt, conditionPat:$cc, CPUSTReg:$ccr)], IIAlu> {
   let isBranch = 1;
   let isBarrier = 1;
   let isTerminator = 1;

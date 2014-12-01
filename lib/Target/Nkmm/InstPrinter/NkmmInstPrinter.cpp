@@ -13,6 +13,7 @@
 
 #include "NkmmInstPrinter.h"
 #include "NkmmInstrInfo.h"
+#include "MCTargetDesc/NkmmBaseInfo.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/MC/MCExpr.h"
 #include "llvm/MC/MCInst.h"
@@ -61,4 +62,11 @@ void NkmmInstPrinter::printMemOperand(const MCInst *MI, unsigned OpNo,
   printOperand(MI, OpNo, O);
   O << "+";
   printOperand(MI, OpNo+1, O);
+}
+
+void NkmmInstPrinter::printCondition(const MCInst *MI, unsigned OpNo,
+    raw_ostream &O) {
+  const MCOperand &Op = MI->getOperand(OpNo);
+  assert(Op.isImm() && "non imm given to printCondition");
+  O << "ST[" << NkmmCondCodeToString(static_cast<NkmmCC::CondCodes>(Op.getImm())) << "]";
 }
