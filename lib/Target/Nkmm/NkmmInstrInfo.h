@@ -55,7 +55,7 @@ public:
                         DebugLoc DL) const override;
 
   bool isPredicated(const MachineInstr *MI) const override;
-  // bool ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
+  bool ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
 };
 
 static inline

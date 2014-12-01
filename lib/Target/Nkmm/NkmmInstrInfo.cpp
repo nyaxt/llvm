@@ -14,6 +14,7 @@
 #include "NkmmInstrInfo.h"
 #include "NkmmTargetMachine.h"
 #include "NkmmMachineFunction.h"
+#include "MCTargetDesc/NkmmBaseInfo.h"
 #include "MCTargetDesc/NkmmMCTargetDesc.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
@@ -195,5 +196,12 @@ NkmmInstrInfo::InsertBranch(MachineBasicBlock &MBB, MachineBasicBlock *TBB,
 }
 
 bool NkmmInstrInfo::isPredicated(const MachineInstr *MI) const {
+  return false;
+}
+
+bool NkmmInstrInfo::
+ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const {
+  NkmmCC::CondCodes CC = (NkmmCC::CondCodes)(int)Cond[0].getImm();
+  Cond[0].setImm(NkmmCC::getOppositeCondition(CC));
   return false;
 }
