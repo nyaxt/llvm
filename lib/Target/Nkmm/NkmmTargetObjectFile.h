@@ -14,12 +14,13 @@
 
 namespace llvm {
 
-  class NkmmTargetObjectFile : public TargetLoweringObjectFileELF {
-    const MCSection *SmallDataSection;
-    const MCSection *SmallBSSSection;
-  public:
-    void Initialize(MCContext &Ctx, const TargetMachine &TM) override;
-  };
+class NkmmTargetObjectFile : public TargetLoweringObjectFileELF {
+  const MCSection *SmallDataSection;
+  const MCSection *SmallBSSSection;
+
+public:
+  void Initialize(MCContext &Ctx, const TargetMachine &TM) override;
+};
 
 } // end namespace llvm
 

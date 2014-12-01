@@ -55,7 +55,8 @@ void NkmmAsmPrinter::EmitInstruction(const MachineInstr *MI) {
   // DEBUG(dbgs() << ">> NkmmAsmPinter::EmitInstruction <<\n");
   NkmmMCInstLower MCInstLowering(*this);
 
-  MachineBasicBlock::const_instr_iterator i = MI, end = MI->getParent()->instr_end();
+  MachineBasicBlock::const_instr_iterator i = MI,
+                                          end = MI->getParent()->instr_end();
   do {
     // DEBUG(dbgs() << "loop start\n");
     // DEBUG(i->dump());
@@ -70,7 +71,8 @@ void NkmmAsmPrinter::EmitInstruction(const MachineInstr *MI) {
   } while ((++i != end) && i->isInsideBundle());
 }
 
-void NkmmAsmPrinter::emitPseudoRET(MCStreamer &OutStreamer, const MachineInstr *MI) {
+void NkmmAsmPrinter::emitPseudoRET(MCStreamer &OutStreamer,
+                                   const MachineInstr *MI) {
   MCInst TmpInst0;
   TmpInst0.setOpcode(Nkmm::JMPm);
 

@@ -23,13 +23,12 @@ namespace llvm {
 /// Nkmm target-specific information for each MachineFunction.
 class NkmmFunctionInfo : public MachineFunctionInfo {
 public:
-  NkmmFunctionInfo(MachineFunction &MF)
-    : MF(MF) {}
+  NkmmFunctionInfo(MachineFunction &MF) : MF(MF) {}
 
 private:
   virtual void anchor();
 
-  MachineFunction& MF;
+  MachineFunction &MF;
 };
 
 } // end of namespace llvm

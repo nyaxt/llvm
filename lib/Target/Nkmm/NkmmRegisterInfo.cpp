@@ -40,15 +40,15 @@
 
 using namespace llvm;
 
-NkmmRegisterInfo::NkmmRegisterInfo(const TargetInstrInfo& tii)
-  : NkmmGenRegisterInfo(Nkmm::R0), TII(tii) {}
+NkmmRegisterInfo::NkmmRegisterInfo(const TargetInstrInfo &tii)
+    : NkmmGenRegisterInfo(Nkmm::R0), TII(tii) {}
 
 const MCPhysReg *
 NkmmRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   return CSR_SaveList;
 }
 
-const uint32_t* NkmmRegisterInfo::getCallPreservedMask(CallingConv::ID) const {
+const uint32_t *NkmmRegisterInfo::getCallPreservedMask(CallingConv::ID) const {
   return CSR_RegMask;
 }
 
@@ -58,9 +58,9 @@ BitVector NkmmRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   return Reserved;
 }
 
-void NkmmRegisterInfo::
-eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
-                    unsigned FIOperandNum, RegScavenger *RS) const {
+void NkmmRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
+                                           int SPAdj, unsigned FIOperandNum,
+                                           RegScavenger *RS) const {
   DEBUG(dbgs() << ">> NkmmRegisterInfo::eliminateFrameIndex <<\n";);
 
   MachineInstr &MI = *II;
@@ -69,25 +69,25 @@ eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
   int FrameIndex = MI.getOperand(FIOperandNum).getIndex();
   uint64_t stackSize = MF.getFrameInfo()->getStackSize();
   int64_t spOffset = MF.getFrameInfo()->getObjectOffset(FrameIndex);
-  int64_t Offset = spOffset + stackSize + MI.getOperand(FIOperandNum+1).getImm();
+  int64_t Offset =
+      spOffset + stackSize + MI.getOperand(FIOperandNum + 1).getImm();
   unsigned FrameReg = Nkmm::SP;
 
-  DEBUG(errs() 
-        << "\nFunction : " << MF.getFunction()->getName() << "\n"
-        << "<--------->\n" << MI
-        << "FrameIndex : " << FrameIndex << "\n"
-        << "spOffset   : " << spOffset << "\n"
-        << "stackSize  : " << stackSize << "\n"
-        << "Offset     : " << Offset << "\n" << "<--------->\n");
+  DEBUG(errs() << "\nFunction : " << MF.getFunction()->getName() << "\n"
+               << "<--------->\n" << MI << "FrameIndex : " << FrameIndex << "\n"
+               << "spOffset   : " << spOffset << "\n"
+               << "stackSize  : " << stackSize << "\n"
+               << "Offset     : " << Offset << "\n"
+               << "<--------->\n");
 
   DEBUG(errs() << "Before:" << MI);
   MI.getOperand(FIOperandNum).ChangeToRegister(FrameReg, false);
-  MI.getOperand(FIOperandNum+1).ChangeToImmediate(Offset);
+  MI.getOperand(FIOperandNum + 1).ChangeToImmediate(Offset);
   DEBUG(errs() << "After:" << MI);
 }
 
 unsigned NkmmRegisterInfo::getFrameRegister(const MachineFunction &) const {
   llvm_unreachable("not implemented");
   return 0;
-  //return Nkmm::SP;
+  // return Nkmm::SP;
 }

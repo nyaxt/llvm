@@ -55,29 +55,21 @@ public:
                         DebugLoc DL) const override;
 
   bool isPredicated(const MachineInstr *MI) const override;
-  bool ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
+  bool
+  ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
 };
 
-static inline
-bool isUncondBranchOpcode(int Opc) {
-  return Opc == Nkmm::JMPi;
-}
+static inline bool isUncondBranchOpcode(int Opc) { return Opc == Nkmm::JMPi; }
 
-static inline
-bool isCondBranchOpcode(int Opc) {
-  return Opc == Nkmm::Jccri;
-}
+static inline bool isCondBranchOpcode(int Opc) { return Opc == Nkmm::Jccri; }
 
-static inline
-bool isJumpTableBranchOpcode(int Opc) {
+static inline bool isJumpTableBranchOpcode(int Opc) {
   return false; // FIXME: we don't have one yet.
 }
 
-static inline
-bool isIndirectBranchOpcode(int Opc) {
+static inline bool isIndirectBranchOpcode(int Opc) {
   return Opc == Nkmm::JMPr || Opc == Nkmm::JMPm;
 }
-
 }
 
 #endif

@@ -27,18 +27,15 @@
 
 using namespace llvm;
 
-NkmmInstrInfo::NkmmInstrInfo()
-    : RI(*this) { }
+NkmmInstrInfo::NkmmInstrInfo() : RI(*this) {}
 
 NkmmInstrInfo::~NkmmInstrInfo() {}
 
-const NkmmRegisterInfo &NkmmInstrInfo::getRegisterInfo() const {
-  return RI;
-}
+const NkmmRegisterInfo &NkmmInstrInfo::getRegisterInfo() const { return RI; }
 
 bool NkmmInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const {
   MachineBasicBlock &MBB = *MI->getParent();
-  switch(MI->getDesc().getOpcode()) {
+  switch (MI->getDesc().getOpcode()) {
   default:
     return false;
   case Nkmm::RetPSP:
@@ -50,11 +47,11 @@ bool NkmmInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const {
   return true;
 }
 
-bool
-NkmmInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
-                                MachineBasicBlock *&FBB,
-                                SmallVectorImpl<MachineOperand> &Cond,
-                                bool AllowModify) const {
+bool NkmmInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB,
+                                  MachineBasicBlock *&TBB,
+                                  MachineBasicBlock *&FBB,
+                                  SmallVectorImpl<MachineOperand> &Cond,
+                                  bool AllowModify) const {
   TBB = nullptr;
   FBB = nullptr;
 
@@ -107,11 +104,11 @@ NkmmInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
     // Cleanup code - to be run for unpredicated unconditional branches and
     //                returns.
     if (!isPredicated(I) &&
-          (isUncondBranchOpcode(I->getOpcode()) ||
-           isIndirectBranchOpcode(I->getOpcode()) ||
-           isJumpTableBranchOpcode(I->getOpcode()) ||
-           I->isReturn())) {
-      // Forget any previous condition branch information - it no longer applies.
+        (isUncondBranchOpcode(I->getOpcode()) ||
+         isIndirectBranchOpcode(I->getOpcode()) ||
+         isJumpTableBranchOpcode(I->getOpcode()) || I->isReturn())) {
+      // Forget any previous condition branch information - it no longer
+      // applies.
       Cond.clear();
       FBB = nullptr;
 
@@ -143,7 +140,8 @@ NkmmInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
 
 unsigned NkmmInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
   MachineBasicBlock::iterator I = MBB.end();
-  if (I == MBB.begin()) return 0;
+  if (I == MBB.begin())
+    return 0;
   --I;
   while (I->isDebugValue()) {
     if (I == MBB.begin())
@@ -159,7 +157,8 @@ unsigned NkmmInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
 
   I = MBB.end();
 
-  if (I == MBB.begin()) return 1;
+  if (I == MBB.begin())
+    return 1;
   --I;
   if (!isCondBranchOpcode(I->getOpcode()))
     return 1;
@@ -169,11 +168,9 @@ unsigned NkmmInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
   return 2;
 }
 
-unsigned
-NkmmInstrInfo::InsertBranch(MachineBasicBlock &MBB, MachineBasicBlock *TBB,
-                               MachineBasicBlock *FBB,
-                               const SmallVectorImpl<MachineOperand> &Cond,
-                               DebugLoc DL) const {
+unsigned NkmmInstrInfo::InsertBranch(
+    MachineBasicBlock &MBB, MachineBasicBlock *TBB, MachineBasicBlock *FBB,
+    const SmallVectorImpl<MachineOperand> &Cond, DebugLoc DL) const {
   // Shouldn't be a fall through.
   assert(TBB && "InsertBranch must not be told to insert a fallthrough");
   assert((Cond.size() == 2 || Cond.size() == 0) &&
@@ -183,24 +180,26 @@ NkmmInstrInfo::InsertBranch(MachineBasicBlock &MBB, MachineBasicBlock *TBB,
     if (Cond.empty()) { // Unconditional branch?
       BuildMI(&MBB, DL, get(Nkmm::JMPi)).addMBB(TBB);
     } else
-      BuildMI(&MBB, DL, get(Nkmm::Jccri)).addMBB(TBB)
-        .addImm(Cond[0].getImm()).addReg(Cond[1].getReg());
+      BuildMI(&MBB, DL, get(Nkmm::Jccri))
+          .addMBB(TBB)
+          .addImm(Cond[0].getImm())
+          .addReg(Cond[1].getReg());
     return 1;
   }
 
   // Two-way conditional branch.
-  BuildMI(&MBB, DL, get(Nkmm::Jccri)).addMBB(TBB)
-    .addImm(Cond[0].getImm()).addReg(Cond[1].getReg());
+  BuildMI(&MBB, DL, get(Nkmm::Jccri))
+      .addMBB(TBB)
+      .addImm(Cond[0].getImm())
+      .addReg(Cond[1].getReg());
   BuildMI(&MBB, DL, get(Nkmm::JMPi)).addMBB(FBB);
   return 2;
 }
 
-bool NkmmInstrInfo::isPredicated(const MachineInstr *MI) const {
-  return false;
-}
+bool NkmmInstrInfo::isPredicated(const MachineInstr *MI) const { return false; }
 
-bool NkmmInstrInfo::
-ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const {
+bool NkmmInstrInfo::ReverseBranchCondition(
+    SmallVectorImpl<MachineOperand> &Cond) const {
   NkmmCC::CondCodes CC = (NkmmCC::CondCodes)(int)Cond[0].getImm();
   Cond[0].setImm(NkmmCC::getOppositeCondition(CC));
   return false;

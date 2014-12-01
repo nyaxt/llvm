@@ -40,14 +40,13 @@ public:
   // and we need them for the beginning of file output before we've
   // seen a single function.
   explicit NkmmAsmPrinter(TargetMachine &TM, MCStreamer &Streamer)
-      : AsmPrinter(TM, Streamer),
-      Subtarget(&TM.getSubtarget<NkmmSubtarget>()), MCInstLowering(*this) {}
+      : AsmPrinter(TM, Streamer), Subtarget(&TM.getSubtarget<NkmmSubtarget>()),
+        MCInstLowering(*this) {}
 
-  const char *getPassName() const override {
-    return "Nkmm Assembly Printer";
-  }
+  const char *getPassName() const override { return "Nkmm Assembly Printer"; }
 
   void EmitInstruction(const MachineInstr *MI) override;
+
 private:
   // tblgen'erated function.
   bool emitPseudoExpansionLowering(MCStreamer &OutStreamer,
@@ -55,7 +54,6 @@ private:
 
   void emitPseudoRET(MCStreamer &OutStreamer, const MachineInstr *MI);
 };
-
 }
 
 #endif

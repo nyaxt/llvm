@@ -28,19 +28,19 @@ using namespace llvm;
 #define DEBUG_TYPE "nkmm-mcinstlower"
 
 NkmmMCInstLower::NkmmMCInstLower(NkmmAsmPrinter &asmprinter)
-  : AsmPrinter(asmprinter) {}
+    : AsmPrinter(asmprinter) {}
 
-void NkmmMCInstLower::Initialize(MCContext *C) {
-  Ctx = C;
-}
+void NkmmMCInstLower::Initialize(MCContext *C) { Ctx = C; }
 
 MCOperand NkmmMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
                                               MachineOperandType MOTy,
                                               unsigned Offset) const {
   const MCSymbol *Symbol;
 
-  // DEBUG(dbgs() << "NkmmMCInstLower::LowerSymbolOperand target flags :" << MO.getTargetFlags() << "\n");
-  assert(MO.getTargetFlags() == 0 && "FIXME: handle MO.getTargetFlags non 0 case");
+  // DEBUG(dbgs() << "NkmmMCInstLower::LowerSymbolOperand target flags :" <<
+  // MO.getTargetFlags() << "\n");
+  assert(MO.getTargetFlags() == 0 &&
+         "FIXME: handle MO.getTargetFlags non 0 case");
 
   switch (MOTy) {
   case MachineOperand::MO_MachineBasicBlock:
@@ -84,7 +84,7 @@ MCOperand NkmmMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
   // Assume offset is never negative.
   assert(Offset > 0);
 
-  const MCConstantExpr *OffsetExpr =  MCConstantExpr::Create(Offset, *Ctx);
+  const MCConstantExpr *OffsetExpr = MCConstantExpr::Create(Offset, *Ctx);
   const MCBinaryExpr *Add = MCBinaryExpr::CreateAdd(MCSym, OffsetExpr, *Ctx);
   return MCOperand::CreateExpr(Add);
 }
@@ -94,10 +94,12 @@ MCOperand NkmmMCInstLower::LowerOperand(const MachineOperand &MO,
   MachineOperandType MOTy = MO.getType();
 
   switch (MOTy) {
-  default: llvm_unreachable("unknown operand type");
+  default:
+    llvm_unreachable("unknown operand type");
   case MachineOperand::MO_Register:
     // Ignore all implicit register operands.
-    if (MO.isImplicit()) break;
+    if (MO.isImplicit())
+      break;
     return MCOperand::CreateReg(MO.getReg());
   case MachineOperand::MO_Immediate:
     return MCOperand::CreateImm(MO.getImm() + offset);
@@ -110,7 +112,7 @@ MCOperand NkmmMCInstLower::LowerOperand(const MachineOperand &MO,
     return LowerSymbolOperand(MO, MOTy, offset);
   case MachineOperand::MO_RegisterMask:
     break;
- }
+  }
 
   return MCOperand();
 }
@@ -126,4 +128,3 @@ void NkmmMCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
       OutMI.addOperand(MCOp);
   }
 }
-

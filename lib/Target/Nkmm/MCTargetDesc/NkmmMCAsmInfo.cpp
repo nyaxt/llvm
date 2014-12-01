@@ -16,16 +16,16 @@
 
 using namespace llvm;
 
-void NkmmMCAsmInfo::anchor() { }
+void NkmmMCAsmInfo::anchor() {}
 
 NkmmMCAsmInfo::NkmmMCAsmInfo(StringRef) {
   PointerSize = CalleeSaveStackSlotSize = 4;
-  AlignmentIsInBytes          = false;
-  Data16bitsDirective         = "\t.2byte\t";
-  Data32bitsDirective         = "\t.4byte\t";
-  Data64bitsDirective         = "\t.8byte\t";
-  PrivateGlobalPrefix         = ".L";
-  CommentString               = "#";
+  AlignmentIsInBytes = false;
+  Data16bitsDirective = "\t.2byte\t";
+  Data32bitsDirective = "\t.4byte\t";
+  Data64bitsDirective = "\t.8byte\t";
+  PrivateGlobalPrefix = ".L";
+  CommentString = "#";
   // ZeroDirective               = "\t.space\t";
   // GPRel32Directive            = "\t.gpword\t";
   // GPRel64Directive            = "\t.gpdword\t";

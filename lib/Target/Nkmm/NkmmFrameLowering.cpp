@@ -36,7 +36,7 @@ using namespace llvm;
 bool NkmmFrameLowering::hasFP(const MachineFunction &MF) const {
   const MachineFrameInfo *MFI = MF.getFrameInfo();
   return MF.getTarget().Options.DisableFramePointerElim(MF) ||
-      MFI->hasVarSizedObjects() || MFI->isFrameAddressTaken();
+         MFI->hasVarSizedObjects() || MFI->isFrameAddressTaken();
 }
 
 uint64_t NkmmFrameLowering::estimateStackSize(const MachineFunction &MF) const {
@@ -73,15 +73,14 @@ uint64_t NkmmFrameLowering::estimateStackSize(const MachineFunction &MF) const {
   return RoundUpToAlignment(Offset, getStackAlignment());
 }
 
-void NkmmFrameLowering::
-emitPrologue(MachineFunction &MF) const {
+void NkmmFrameLowering::emitPrologue(MachineFunction &MF) const {
   DEBUG(dbgs() << ">> NkmmFrameLowering::emitPrologue <<\n");
 
-  MachineBasicBlock &MBB   = MF.front();
+  MachineBasicBlock &MBB = MF.front();
   MachineFrameInfo *MFI = MF.getFrameInfo();
 
   const NkmmInstrInfo &TII =
-    *static_cast<const NkmmInstrInfo*>(STI.getInstrInfo());
+      *static_cast<const NkmmInstrInfo *>(STI.getInstrInfo());
 
   MachineBasicBlock::iterator MBBI = MBB.begin();
   DebugLoc dl = MBBI != MBB.end() ? MBBI->getDebugLoc() : DebugLoc();
@@ -89,7 +88,7 @@ emitPrologue(MachineFunction &MF) const {
   // allocate fixed size for simplicity
   uint64_t StackSize = 4 * 16;
 
-   // Update stack size
+  // Update stack size
   MFI->setStackSize(StackSize);
 
   BuildMI(MBB, MBBI, dl, TII.get(Nkmm::SUBri), Nkmm::SP)
@@ -97,14 +96,14 @@ emitPrologue(MachineFunction &MF) const {
       .addImm(StackSize);
 }
 
-void NkmmFrameLowering::
-emitEpilogue(MachineFunction &MF, MachineBasicBlock &MBB) const {
+void NkmmFrameLowering::emitEpilogue(MachineFunction &MF,
+                                     MachineBasicBlock &MBB) const {
   DEBUG(dbgs() << ">> NkmmFrameLowering::emitEpilogue <<\n");
 
   MachineBasicBlock::iterator MBBI = MBB.getLastNonDebugInstr();
-  MachineFrameInfo *MFI            = MF.getFrameInfo();
+  MachineFrameInfo *MFI = MF.getFrameInfo();
   const NkmmInstrInfo &TII =
-    *static_cast<const NkmmInstrInfo*>(STI.getInstrInfo());
+      *static_cast<const NkmmInstrInfo *>(STI.getInstrInfo());
   DebugLoc dl = MBBI->getDebugLoc();
 
   // Get the number of bytes from FrameInfo

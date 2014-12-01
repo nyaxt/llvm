@@ -24,68 +24,67 @@
 #include <string>
 
 namespace llvm {
-  namespace NkmmISD {
-    enum NodeType {
-      // Start the numbering from where ISD NodeType finishes.
-      FIRST_NUMBER = ISD::BUILTIN_OP_END,
+namespace NkmmISD {
+enum NodeType {
+  // Start the numbering from where ISD NodeType finishes.
+  FIRST_NUMBER = ISD::BUILTIN_OP_END,
+  Call,
+  Ret,
+  Compare,
+  BranchConditional,
+};
+}
 
-      Call,
-      Ret,
-      Compare,
-      BranchConditional,
-    };
-  }
+//===--------------------------------------------------------------------===//
+// TargetLowering Implementation
+//===--------------------------------------------------------------------===//
+class NkmmFunctionInfo;
+class NkmmSubtarget;
+class NkmmCCState;
 
-  //===--------------------------------------------------------------------===//
-  // TargetLowering Implementation
-  //===--------------------------------------------------------------------===//
-  class NkmmFunctionInfo;
-  class NkmmSubtarget;
-  class NkmmCCState;
+class NkmmTargetLowering : public TargetLowering {
+  const NkmmSubtarget &Subtarget;
 
-  class NkmmTargetLowering : public TargetLowering  {
-    const NkmmSubtarget &Subtarget;
-  public:
-    explicit NkmmTargetLowering(const NkmmTargetMachine &TM);
+public:
+  explicit NkmmTargetLowering(const NkmmTargetMachine &TM);
 
-    MVT getScalarShiftAmountTy(EVT LHSTy) const override { return MVT::i32; }
+  MVT getScalarShiftAmountTy(EVT LHSTy) const override { return MVT::i32; }
 
-    /// getTargetNodeName - This method returns the name of a target specific
-    //  DAG node.
-    const char *getTargetNodeName(unsigned Opcode) const override;
+  /// getTargetNodeName - This method returns the name of a target specific
+  //  DAG node.
+  const char *getTargetNodeName(unsigned Opcode) const override;
 
-    bool CanLowerReturn(CallingConv::ID CallConv, MachineFunction &MF,
-                        bool isVarArg,
-                        const SmallVectorImpl<ISD::OutputArg> &Outs,
-                        LLVMContext &Context) const override;
+  bool CanLowerReturn(CallingConv::ID CallConv, MachineFunction &MF,
+                      bool isVarArg,
+                      const SmallVectorImpl<ISD::OutputArg> &Outs,
+                      LLVMContext &Context) const override;
 
-    SDValue
-      LowerFormalArguments(SDValue Chain,
-                           CallingConv::ID CallConv, bool isVarArg,
-                           const SmallVectorImpl<ISD::InputArg> &Ins,
-                           SDLoc dl, SelectionDAG &DAG,
-                           SmallVectorImpl<SDValue> &InVals) const override;
+  SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,
+                               bool isVarArg,
+                               const SmallVectorImpl<ISD::InputArg> &Ins,
+                               SDLoc dl, SelectionDAG &DAG,
+                               SmallVectorImpl<SDValue> &InVals) const override;
 
-    SDValue LowerCall(TargetLowering::CallLoweringInfo &CLI,
-                      SmallVectorImpl<SDValue> &InVals) const override;
+  SDValue LowerCall(TargetLowering::CallLoweringInfo &CLI,
+                    SmallVectorImpl<SDValue> &InVals) const override;
 
-    SDValue LowerReturn(SDValue Chain,
-                        CallingConv::ID CallConv, bool isVarArg,
-                        const SmallVectorImpl<ISD::OutputArg> &Outs,
-                        const SmallVectorImpl<SDValue> &OutVals,
-                        SDLoc dl, SelectionDAG &DAG) const override;
+  SDValue LowerReturn(SDValue Chain, CallingConv::ID CallConv, bool isVarArg,
+                      const SmallVectorImpl<ISD::OutputArg> &Outs,
+                      const SmallVectorImpl<SDValue> &OutVals, SDLoc dl,
+                      SelectionDAG &DAG) const override;
 
-    SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
-  private:
-    SDValue LowerBR_CC(SDValue Op, SelectionDAG &DAG) const;
+  SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
 
-    // Lower Operand helpers
-    SDValue LowerCallResult(SDValue Chain, SDValue InFlag,
-                            CallingConv::ID CallConv, bool isVarArg,
-                            const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl,
-                            SelectionDAG &DAG, SmallVectorImpl<SDValue> &InVals,
-                            TargetLowering::CallLoweringInfo &CLI) const;
-  };
+private:
+  SDValue LowerBR_CC(SDValue Op, SelectionDAG &DAG) const;
+
+  // Lower Operand helpers
+  SDValue LowerCallResult(SDValue Chain, SDValue InFlag,
+                          CallingConv::ID CallConv, bool isVarArg,
+                          const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl,
+                          SelectionDAG &DAG, SmallVectorImpl<SDValue> &InVals,
+                          TargetLowering::CallLoweringInfo &CLI) const;
+};
 }
 
 #endif

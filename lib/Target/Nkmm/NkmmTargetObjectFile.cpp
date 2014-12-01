@@ -19,17 +19,15 @@
 #include "llvm/Target/TargetMachine.h"
 using namespace llvm;
 
-void NkmmTargetObjectFile::Initialize(MCContext &Ctx, const TargetMachine &TM){
+void NkmmTargetObjectFile::Initialize(MCContext &Ctx, const TargetMachine &TM) {
   TargetLoweringObjectFileELF::Initialize(Ctx, TM);
   InitializeELF(TM.Options.UseInitArray);
 
-  SmallDataSection =
-    getContext().getELFSection(".sdata", ELF::SHT_PROGBITS,
-                               ELF::SHF_WRITE |ELF::SHF_ALLOC,
-                               SectionKind::getDataRel());
+  SmallDataSection = getContext().getELFSection(".sdata", ELF::SHT_PROGBITS,
+                                                ELF::SHF_WRITE | ELF::SHF_ALLOC,
+                                                SectionKind::getDataRel());
 
-  SmallBSSSection =
-    getContext().getELFSection(".sbss", ELF::SHT_NOBITS,
-                               ELF::SHF_WRITE |ELF::SHF_ALLOC,
-                               SectionKind::getBSS());
+  SmallBSSSection = getContext().getELFSection(".sbss", ELF::SHT_NOBITS,
+                                               ELF::SHF_WRITE | ELF::SHF_ALLOC,
+                                               SectionKind::getBSS());
 }

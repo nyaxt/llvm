@@ -23,17 +23,12 @@
 
 using namespace llvm;
 
-NkmmSubtarget::NkmmSubtarget(const std::string &TT,
-                             const std::string &CPU,
-                             const std::string &FS,
-                             const NkmmTargetMachine &TM)
-    : NkmmGenSubtargetInfo(TT, CPU, FS)
-    , TM(TM)
-    , FrameLowering(*this, /* stack align */ 8)
-    , TLInfo(TM)
-    , DL("e-p:32:32:32-i8:8:32-i16:16:32-i64:64:64-n32")
-{
-  ParseSubtargetFeatures("generic", FS);    
+NkmmSubtarget::NkmmSubtarget(const std::string &TT, const std::string &CPU,
+                             const std::string &FS, const NkmmTargetMachine &TM)
+    : NkmmGenSubtargetInfo(TT, CPU, FS), TM(TM),
+      FrameLowering(*this, /* stack align */ 8), TLInfo(TM),
+      DL("e-p:32:32:32-i8:8:32-i16:16:32-i64:64:64-n32") {
+  ParseSubtargetFeatures("generic", FS);
 }
 
 void NkmmSubtarget::anchor() {}

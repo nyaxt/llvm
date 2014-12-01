@@ -30,20 +30,18 @@ class NkmmTargetMachine : public LLVMTargetMachine {
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
 
   virtual void anchor();
+
 public:
-  NkmmTargetMachine(const Target &T, StringRef TT, StringRef CPU, 
-                    StringRef FS, const TargetOptions &Options, 
-                    Reloc::Model RM, CodeModel::Model CM, 
-                    CodeGenOpt::Level OL);
+  NkmmTargetMachine(const Target &T, StringRef TT, StringRef CPU, StringRef FS,
+                    const TargetOptions &Options, Reloc::Model RM,
+                    CodeModel::Model CM, CodeGenOpt::Level OL);
   ~NkmmTargetMachine() override;
 
   const NkmmSubtarget *getSubtargetImpl() const override {
     return &DefaultSubtarget;
   }
 
-  const NkmmInstrInfo *getInstrInfo() const {
-    return &InstrInfo; 
-  }
+  const NkmmInstrInfo *getInstrInfo() const { return &InstrInfo; }
 
   TargetLoweringObjectFile *getObjFileLowering() const override {
     return TLOF.get();

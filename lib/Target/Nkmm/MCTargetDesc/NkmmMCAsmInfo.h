@@ -17,13 +17,14 @@
 #include "llvm/MC/MCAsmInfoELF.h"
 
 namespace llvm {
-  class StringRef;
+class StringRef;
 
-  class NkmmMCAsmInfo : public MCAsmInfoELF {
-    void anchor() override;
-  public:
-    explicit NkmmMCAsmInfo(StringRef TT);
-  };
+class NkmmMCAsmInfo : public MCAsmInfoELF {
+  void anchor() override;
+
+public:
+  explicit NkmmMCAsmInfo(StringRef TT);
+};
 
 } // namespace llvm
 

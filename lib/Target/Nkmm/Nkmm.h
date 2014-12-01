@@ -19,10 +19,10 @@
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-  class NkmmTargetMachine;
-  class FunctionPass;
+class NkmmTargetMachine;
+class FunctionPass;
 
-  FunctionPass *createNkmmISelDag(NkmmTargetMachine &TM);
+FunctionPass *createNkmmISelDag(NkmmTargetMachine &TM);
 } // end namespace llvm;
 
 #endif

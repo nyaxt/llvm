@@ -40,9 +40,7 @@ using namespace llvm;
 #define DEBUG_TYPE "nkmm-lower"
 
 NkmmTargetLowering::NkmmTargetLowering(const NkmmTargetMachine &TM)
-  : TargetLowering(TM)
-  , Subtarget(*TM.getSubtargetImpl())
-{
+    : TargetLowering(TM), Subtarget(*TM.getSubtargetImpl()) {
   setBooleanContents(ZeroOrOneBooleanContent);
   setBooleanVectorContents(ZeroOrOneBooleanContent);
 
@@ -50,14 +48,14 @@ NkmmTargetLowering::NkmmTargetLowering(const NkmmTargetMachine &TM)
 
   setOperationAction(ISD::BR_CC, MVT::i32, Custom);
 
-  setLoadExtAction(ISD::EXTLOAD,  MVT::i1,  Promote);
-  setLoadExtAction(ISD::EXTLOAD,  MVT::i8,  Promote);
-  setLoadExtAction(ISD::EXTLOAD,  MVT::i16, Promote);
-  setLoadExtAction(ISD::ZEXTLOAD, MVT::i1,  Promote);
-  setLoadExtAction(ISD::ZEXTLOAD, MVT::i8,  Promote);
+  setLoadExtAction(ISD::EXTLOAD, MVT::i1, Promote);
+  setLoadExtAction(ISD::EXTLOAD, MVT::i8, Promote);
+  setLoadExtAction(ISD::EXTLOAD, MVT::i16, Promote);
+  setLoadExtAction(ISD::ZEXTLOAD, MVT::i1, Promote);
+  setLoadExtAction(ISD::ZEXTLOAD, MVT::i8, Promote);
   setLoadExtAction(ISD::ZEXTLOAD, MVT::i16, Promote);
-  setLoadExtAction(ISD::SEXTLOAD, MVT::i1,  Promote);
-  setLoadExtAction(ISD::SEXTLOAD, MVT::i8,  Promote);
+  setLoadExtAction(ISD::SEXTLOAD, MVT::i1, Promote);
+  setLoadExtAction(ISD::SEXTLOAD, MVT::i8, Promote);
   setLoadExtAction(ISD::SEXTLOAD, MVT::i16, Promote);
 
   setMinFunctionAlignment(2);
@@ -69,26 +67,30 @@ NkmmTargetLowering::NkmmTargetLowering(const NkmmTargetMachine &TM)
 
 const char *NkmmTargetLowering::getTargetNodeName(unsigned Opcode) const {
   switch (Opcode) {
-  case NkmmISD::Call: return "NkmmISD::Call";
-  case NkmmISD::Ret: return "NkmmISD::Ret";
-  case NkmmISD::Compare: return "NkmmISD::Compare";
-  case NkmmISD::BranchConditional: return "NkmmISD::BranchConditional";
-  default: return nullptr;
+  case NkmmISD::Call:
+    return "NkmmISD::Call";
+  case NkmmISD::Ret:
+    return "NkmmISD::Ret";
+  case NkmmISD::Compare:
+    return "NkmmISD::Compare";
+  case NkmmISD::BranchConditional:
+    return "NkmmISD::BranchConditional";
+  default:
+    return nullptr;
   }
 }
 
 #include "NkmmGenCallingConv.inc"
 
-SDValue NkmmTargetLowering::LowerCallResult(SDValue Chain, SDValue InFlag,
-                            CallingConv::ID CallConv, bool isVarArg,
-                            const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl,
-                            SelectionDAG &DAG, SmallVectorImpl<SDValue> &InVals,
-                            TargetLowering::CallLoweringInfo &CLI) const
-{
+SDValue NkmmTargetLowering::LowerCallResult(
+    SDValue Chain, SDValue InFlag, CallingConv::ID CallConv, bool isVarArg,
+    const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl, SelectionDAG &DAG,
+    SmallVectorImpl<SDValue> &InVals,
+    TargetLowering::CallLoweringInfo &CLI) const {
   // Assign locations to each value returned by this call.
   SmallVector<CCValAssign, 16> RVLocs;
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), RVLocs,
-      *DAG.getContext());
+                 *DAG.getContext());
 
   CCInfo.AnalyzeCallResult(Ins, RetCC_Nkmm);
 
@@ -100,15 +102,14 @@ SDValue NkmmTargetLowering::LowerCallResult(SDValue Chain, SDValue InFlag,
   }
   (void)InFlag;
 
-  return Chain;  
+  return Chain;
 }
 
 // addLiveIn - This helper function adds the specified physical register to the
 // MachineFunction as a live in value.  It also creates a corresponding
 // virtual register for it.
-static unsigned
-addLiveIn(MachineFunction &MF, unsigned PReg, const TargetRegisterClass *RC)
-{
+static unsigned addLiveIn(MachineFunction &MF, unsigned PReg,
+                          const TargetRegisterClass *RC) {
   unsigned VReg = MF.getRegInfo().createVirtualRegister(RC);
   MF.getRegInfo().addLiveIn(PReg, VReg);
   return VReg;
@@ -117,8 +118,7 @@ addLiveIn(MachineFunction &MF, unsigned PReg, const TargetRegisterClass *RC)
 SDValue NkmmTargetLowering::LowerFormalArguments(
     SDValue Chain, CallingConv::ID CallConv, bool isVarArg,
     const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc DL, SelectionDAG &DAG,
-    SmallVectorImpl<SDValue> &InVals) const
-{
+    SmallVectorImpl<SDValue> &InVals) const {
   MachineFunction &MF = DAG.getMachineFunction();
   MachineFrameInfo *MFI = MF.getFrameInfo();
   NkmmFunctionInfo *NkmmFI = MF.getInfo<NkmmFunctionInfo>();
@@ -129,9 +129,9 @@ SDValue NkmmTargetLowering::LowerFormalArguments(
   // Assign locations to all of the incoming arguments.
   SmallVector<CCValAssign, 16> ArgLocs;
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), ArgLocs,
-      *DAG.getContext());
+                 *DAG.getContext());
   Function::const_arg_iterator FuncArg =
-    DAG.getMachineFunction().getFunction()->arg_begin();
+      DAG.getMachineFunction().getFunction()->arg_begin();
 
   CCInfo.AnalyzeFormalArguments(Ins, CC_Nkmm);
 
@@ -166,54 +166,52 @@ SDValue NkmmTargetLowering::LowerFormalArguments(
 
     if (VA.getLocInfo() != CCValAssign::Full)
       llvm_unreachable("recv arg with non full val assign not implemented!");
-      
+
     InVals.push_back(ArgValue);
   }
 
-  return Chain;  
+  return Chain;
 }
 
 SDValue NkmmTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
-                                      SmallVectorImpl<SDValue> &InVals) const
-{
-  SelectionDAG &DAG                     = CLI.DAG;
-  SDLoc DL                              = CLI.DL;
+                                      SmallVectorImpl<SDValue> &InVals) const {
+  SelectionDAG &DAG = CLI.DAG;
+  SDLoc DL = CLI.DL;
   SmallVectorImpl<ISD::OutputArg> &Outs = CLI.Outs;
-  SmallVectorImpl<SDValue> &OutVals     = CLI.OutVals;
-  SmallVectorImpl<ISD::InputArg> &Ins   = CLI.Ins;
-  SDValue Chain                         = CLI.Chain;
-  SDValue Callee                        = CLI.Callee;
-  bool &IsTailCall                      = CLI.IsTailCall;
-  CallingConv::ID CallConv              = CLI.CallConv;
-  bool IsVarArg                         = CLI.IsVarArg;
+  SmallVectorImpl<SDValue> &OutVals = CLI.OutVals;
+  SmallVectorImpl<ISD::InputArg> &Ins = CLI.Ins;
+  SDValue Chain = CLI.Chain;
+  SDValue Callee = CLI.Callee;
+  bool &IsTailCall = CLI.IsTailCall;
+  CallingConv::ID CallConv = CLI.CallConv;
+  bool IsVarArg = CLI.IsVarArg;
 
   SDValue InFlag = Chain.getValue(1);
   return LowerCallResult(Chain, InFlag, CallConv, IsVarArg, Ins, DL, DAG,
                          InVals, CLI);
 }
 
-bool
-NkmmTargetLowering::CanLowerReturn(CallingConv::ID CallConv,
-                                   MachineFunction &MF, bool IsVarArg,
-                                   const SmallVectorImpl<ISD::OutputArg> &Outs,
-                                   LLVMContext &Context) const {
+bool NkmmTargetLowering::CanLowerReturn(
+    CallingConv::ID CallConv, MachineFunction &MF, bool IsVarArg,
+    const SmallVectorImpl<ISD::OutputArg> &Outs, LLVMContext &Context) const {
   SmallVector<CCValAssign, 16> RVLocs;
   CCState CCInfo(CallConv, IsVarArg, MF, RVLocs, Context);
   return CCInfo.CheckReturn(Outs, RetCC_Nkmm);
 }
 
-SDValue NkmmTargetLowering::LowerReturn(
-    SDValue Chain, CallingConv::ID CallConv, bool isVarArg,
-    const SmallVectorImpl<ISD::OutputArg> &Outs,
-    const SmallVectorImpl<SDValue> &OutVals, SDLoc DL, SelectionDAG &DAG) const
-{
+SDValue
+NkmmTargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
+                                bool isVarArg,
+                                const SmallVectorImpl<ISD::OutputArg> &Outs,
+                                const SmallVectorImpl<SDValue> &OutVals,
+                                SDLoc DL, SelectionDAG &DAG) const {
   // CCValAssign - represent the assignment of
   // the return value to a location
   SmallVector<CCValAssign, 16> RVLocs;
   MachineFunction &MF = DAG.getMachineFunction();
 
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), RVLocs,
-      *DAG.getContext());
+                 *DAG.getContext());
   CCInfo.AnalyzeReturn(Outs, RetCC_Nkmm);
 
   SDValue Flag;
@@ -234,7 +232,7 @@ SDValue NkmmTargetLowering::LowerReturn(
   if (MF.getFunction()->hasStructRetAttr())
     llvm_unreachable("struct return not implemented!");
 
-  RetOps[0] = Chain;  // Update chain.
+  RetOps[0] = Chain; // Update chain.
   // Add the flag if we have it.
   if (Flag.getNode())
     RetOps.push_back(Flag);
@@ -242,23 +240,33 @@ SDValue NkmmTargetLowering::LowerReturn(
   return DAG.getNode(NkmmISD::Ret, DL, MVT::Other, RetOps);
 }
 
-SDValue NkmmTargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
+SDValue NkmmTargetLowering::LowerOperation(SDValue Op,
+                                           SelectionDAG &DAG) const {
   switch (Op.getOpcode()) {
-  default: llvm_unreachable("Don't know how to custom lower this!");
-  case ISD::BR_CC: return LowerBR_CC(Op, DAG);
+  default:
+    llvm_unreachable("Don't know how to custom lower this!");
+  case ISD::BR_CC:
+    return LowerBR_CC(Op, DAG);
   }
 }
 
 /// IntCCToNkmmCC - Convert a DAG integer condition code to an Nkmm CC
 static NkmmCC::CondCodes IntCCToNkmmCC(ISD::CondCode CC) {
   switch (CC) {
-  default: llvm_unreachable("Unknown condition code!");
-  case ISD::SETNE: return NkmmCC::NE;
-  case ISD::SETEQ: return NkmmCC::EQ;
-  case ISD::SETGT: return NkmmCC::GT;
-  case ISD::SETGE: return NkmmCC::GE;
-  case ISD::SETLT: return NkmmCC::LT;
-  case ISD::SETLE: return NkmmCC::LE;
+  default:
+    llvm_unreachable("Unknown condition code!");
+  case ISD::SETNE:
+    return NkmmCC::NE;
+  case ISD::SETEQ:
+    return NkmmCC::EQ;
+  case ISD::SETGT:
+    return NkmmCC::GT;
+  case ISD::SETGE:
+    return NkmmCC::GE;
+  case ISD::SETLT:
+    return NkmmCC::LT;
+  case ISD::SETLE:
+    return NkmmCC::LE;
   }
 }
 
@@ -275,5 +283,6 @@ SDValue NkmmTargetLowering::LowerBR_CC(SDValue Op, SelectionDAG &DAG) const {
   SDValue Nkmmcc = DAG.getConstant(IntCCToNkmmCC(CC), MVT::i32);
   SDValue Cmp = DAG.getNode(NkmmISD::Compare, dl, MVT::Glue, LHS, RHS);
   SDValue CCR = DAG.getRegister(Nkmm::ST, MVT::i32);
-  return DAG.getNode(NkmmISD::BranchConditional, dl, MVT::Other, Chain, Dest, Nkmmcc, CCR, Cmp);
+  return DAG.getNode(NkmmISD::BranchConditional, dl, MVT::Other, Chain, Dest,
+                     Nkmmcc, CCR, Cmp);
 }

@@ -30,8 +30,7 @@ NkmmTargetMachine::NkmmTargetMachine(const Target &T, StringRef TT,
                                      CodeGenOpt::Level OL)
     : LLVMTargetMachine(T, TT, CPU, FS, Options, RM, CM, OL),
       DefaultSubtarget(TT, CPU, FS, *this),
-      TLOF(make_unique<NkmmTargetObjectFile>())
-{
+      TLOF(make_unique<NkmmTargetObjectFile>()) {
   initAsmInfo();
 }
 
@@ -42,9 +41,9 @@ void NkmmTargetMachine::anchor() {}
 namespace {
 /// Nkmm Code Generator Pass Configuration Options.
 class NkmmPassConfig : public TargetPassConfig {
- public:
+public:
   NkmmPassConfig(NkmmTargetMachine *TM, PassManagerBase &PM)
-    : TargetPassConfig(TM, PM) {}
+      : TargetPassConfig(TM, PM) {}
 
   NkmmTargetMachine &getNkmmTargetMachine() const {
     return getTM<NkmmTargetMachine>();

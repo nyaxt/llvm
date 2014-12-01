@@ -65,12 +65,10 @@ createMCAsmStreamer(MCContext &Ctx, formatted_raw_ostream &OS,
   return S;
 }
 */
-static MCInstPrinter *createNkmmMCInstPrinter(const Target &T,
-                                              unsigned SyntaxVariant,
-                                              const MCAsmInfo &MAI,
-                                              const MCInstrInfo &MII,
-                                              const MCRegisterInfo &MRI,
-                                              const MCSubtargetInfo &STI) {
+static MCInstPrinter *
+createNkmmMCInstPrinter(const Target &T, unsigned SyntaxVariant,
+                        const MCAsmInfo &MAI, const MCInstrInfo &MII,
+                        const MCRegisterInfo &MRI, const MCSubtargetInfo &STI) {
   return new NkmmInstPrinter(MAI, MII, MRI);
 }
 
@@ -95,6 +93,5 @@ extern "C" void LLVMInitializeNkmmTargetMC() {
   TargetRegistry::RegisterMCSubtargetInfo(TheNkmmTarget,
                                           createNkmmMCSubtargetInfo);
                                         */
-  TargetRegistry::RegisterMCInstPrinter(TheNkmmTarget,
-                                        createNkmmMCInstPrinter);
+  TargetRegistry::RegisterMCInstPrinter(TheNkmmTarget, createNkmmMCInstPrinter);
 }

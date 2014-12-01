@@ -48,9 +48,7 @@ public:
     return &InstrInfo.getRegisterInfo();
   }
 
-  const NkmmInstrInfo *getInstrInfo() const override {
-    return &InstrInfo;
-  }
+  const NkmmInstrInfo *getInstrInfo() const override { return &InstrInfo; }
 
   const TargetFrameLowering *getFrameLowering() const override {
     return &FrameLowering;

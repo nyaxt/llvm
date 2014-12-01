@@ -1,4 +1,5 @@
-//===-- NkmmBaseInfo.h - Top level definitions for Nkmm -------- --*- C++ -*-===//
+//===-- NkmmBaseInfo.h - Top level definitions for Nkmm -------- --*- C++
+//-*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -24,37 +25,49 @@ namespace llvm {
 
 // Enums corresponding to Nkmm condition codes
 namespace NkmmCC {
-  enum CondCodes { // Meaning (integer)          Meaning (floating-point)
-    EQ,            // Equal                      Equal
-    NE,            // Not equal                  Not equal, or unordered
-    GE,            // Greater than or equal      Greater than or equal
-    LT,            // Less than                  Less than, or unordered
-    GT,            // Greater than               Greater than
-    LE,            // Less than or equal         <, ==, or unordered
-    Count
-  };
+enum CondCodes { // Meaning (integer)          Meaning (floating-point)
+  EQ,            // Equal                      Equal
+  NE,            // Not equal                  Not equal, or unordered
+  GE,            // Greater than or equal      Greater than or equal
+  LT,            // Less than                  Less than, or unordered
+  GT,            // Greater than               Greater than
+  LE,            // Less than or equal         <, ==, or unordered
+  Count };
 
-  inline static CondCodes getOppositeCondition(CondCodes CC) {
-    switch (CC) {
-    default: llvm_unreachable("Unknown condition code");
-    case EQ: return NE;
-    case NE: return EQ;
-    case GE: return LT;
-    case LT: return GE;
-    case GT: return LE;
-    case LE: return GT;
-    }
+inline static CondCodes getOppositeCondition(CondCodes CC) {
+  switch (CC) {
+  default:
+    llvm_unreachable("Unknown condition code");
+  case EQ:
+    return NE;
+  case NE:
+    return EQ;
+  case GE:
+    return LT;
+  case LT:
+    return GE;
+  case GT:
+    return LE;
+  case LE:
+    return GT;
   }
+}
 } // namespace NkmmCC
 
 inline static const char *NkmmCondCodeToString(NkmmCC::CondCodes CC) {
   switch (CC) {
-  case NkmmCC::EQ:  return "eq";
-  case NkmmCC::NE:  return "ne";
-  case NkmmCC::GE:  return "ge";
-  case NkmmCC::LT:  return "lt";
-  case NkmmCC::GT:  return "gt";
-  case NkmmCC::LE:  return "le";
+  case NkmmCC::EQ:
+    return "eq";
+  case NkmmCC::NE:
+    return "ne";
+  case NkmmCC::GE:
+    return "ge";
+  case NkmmCC::LT:
+    return "lt";
+  case NkmmCC::GT:
+    return "gt";
+  case NkmmCC::LE:
+    return "le";
   }
   llvm_unreachable("Unknown condition code");
 }

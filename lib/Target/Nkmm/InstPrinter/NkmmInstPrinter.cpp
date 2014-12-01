@@ -52,21 +52,22 @@ void NkmmInstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
   }
 
   assert(Op.isExpr() && "unknown operand kind in printOperand");
-  //printExpr(Op.getExpr(), O);
+  // printExpr(Op.getExpr(), O);
   O << *Op.getExpr();
 }
 
 void NkmmInstPrinter::printMemOperand(const MCInst *MI, unsigned OpNo,
-    raw_ostream &O) {
+                                      raw_ostream &O) {
   const MCOperand &Op = MI->getOperand(OpNo);
   printOperand(MI, OpNo, O);
   O << "+";
-  printOperand(MI, OpNo+1, O);
+  printOperand(MI, OpNo + 1, O);
 }
 
 void NkmmInstPrinter::printCondition(const MCInst *MI, unsigned OpNo,
-    raw_ostream &O) {
+                                     raw_ostream &O) {
   const MCOperand &Op = MI->getOperand(OpNo);
   assert(Op.isImm() && "non imm given to printCondition");
-  O << "ST[" << NkmmCondCodeToString(static_cast<NkmmCC::CondCodes>(Op.getImm())) << "]";
+  O << "ST["
+    << NkmmCondCodeToString(static_cast<NkmmCC::CondCodes>(Op.getImm())) << "]";
 }

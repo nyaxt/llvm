@@ -22,7 +22,8 @@ protected:
 
 public:
   NkmmFrameLowering(const NkmmSubtarget &sti, unsigned Alignment)
-    : TargetFrameLowering(StackGrowsDown, Alignment, 0, Alignment), STI(sti) {}
+      : TargetFrameLowering(StackGrowsDown, Alignment, 0, Alignment), STI(sti) {
+  }
 
   bool hasFP(const MachineFunction &MF) const override;
 

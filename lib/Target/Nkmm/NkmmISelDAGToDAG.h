@@ -21,7 +21,6 @@ class FunctionPass;
 /// createNkmmISelDag - This pass converts a legalized DAG into a
 /// NKMM-specific DAG, ready for instruction scheduling.
 FunctionPass *createNkmmISelDag(NkmmTargetMachine &TM);
-
 }
 
 #endif

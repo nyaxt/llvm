@@ -26,7 +26,7 @@ class TargetInstrInfo;
 class Type;
 
 class NkmmRegisterInfo : public NkmmGenRegisterInfo {
-  const TargetInstrInfo& TII;
+  const TargetInstrInfo &TII;
 
 public:
   NkmmRegisterInfo(const TargetInstrInfo &tii);
@@ -39,8 +39,8 @@ public:
   BitVector getReservedRegs(const MachineFunction &MF) const override;
 
   /// Stack Frame Processing Methods
-  void eliminateFrameIndex(MachineBasicBlock::iterator II,
-                           int SPAdj, unsigned FIOperandNum,
+  void eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
+                           unsigned FIOperandNum,
                            RegScavenger *RS = nullptr) const override;
 
   /// Debug information queries.
