@@ -214,6 +214,7 @@ def JMPm : NkmmInst<(outs), (ins mem:$addr),
   // let isBarrier = 1;
 }
 
+// FIXME: Rename to Jcci
 def Jccri : NkmmInst<(outs), (ins jmpiTarget:$jmptgt, condition:$cc, CPUSTReg:$ccr),
   "if($cc) PC <= $jmptgt", [(NkmmBranchConditional bb:$jmptgt, conditionPat:$cc, CPUSTReg:$ccr)], IIAlu> {
   let isBranch = 1;

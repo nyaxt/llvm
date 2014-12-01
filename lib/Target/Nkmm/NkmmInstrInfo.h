@@ -42,7 +42,41 @@ public:
   virtual const NkmmRegisterInfo &getRegisterInfo() const;
 
   bool expandPostRAPseudo(MachineBasicBlock::iterator MI) const override;
+
+  // Branch analysis.
+  bool AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
+                     MachineBasicBlock *&FBB,
+                     SmallVectorImpl<MachineOperand> &Cond,
+                     bool AllowModify = false) const override;
+  unsigned RemoveBranch(MachineBasicBlock &MBB) const override;
+  unsigned InsertBranch(MachineBasicBlock &MBB, MachineBasicBlock *TBB,
+                        MachineBasicBlock *FBB,
+                        const SmallVectorImpl<MachineOperand> &Cond,
+                        DebugLoc DL) const override;
+
+  bool isPredicated(const MachineInstr *MI) const override;
+  // bool ReverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
 };
+
+static inline
+bool isUncondBranchOpcode(int Opc) {
+  return Opc == Nkmm::JMPi;
+}
+
+static inline
+bool isCondBranchOpcode(int Opc) {
+  return Opc == Nkmm::Jccri;
+}
+
+static inline
+bool isJumpTableBranchOpcode(int Opc) {
+  return false; // FIXME: we don't have one yet.
+}
+
+static inline
+bool isIndirectBranchOpcode(int Opc) {
+  return Opc == Nkmm::JMPr || Opc == Nkmm::JMPm;
+}
 
 }
 
