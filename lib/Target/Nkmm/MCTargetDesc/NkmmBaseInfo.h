@@ -57,17 +57,17 @@ inline static CondCodes getOppositeCondition(CondCodes CC) {
 inline static const char *NkmmCondCodeToString(NkmmCC::CondCodes CC) {
   switch (CC) {
   case NkmmCC::EQ:
-    return "eq";
+    return "==";
   case NkmmCC::NE:
-    return "ne";
+    return "!=";
   case NkmmCC::GE:
-    return "ge";
+    return ">=";
   case NkmmCC::LT:
-    return "lt";
+    return "<";
   case NkmmCC::GT:
-    return "gt";
+    return ">";
   case NkmmCC::LE:
-    return "le";
+    return ">=";
   }
   llvm_unreachable("Unknown condition code");
 }
