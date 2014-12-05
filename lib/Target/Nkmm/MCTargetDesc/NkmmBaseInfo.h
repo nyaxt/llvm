@@ -67,7 +67,7 @@ inline static const char *NkmmCondCodeToString(NkmmCC::CondCodes CC) {
   case NkmmCC::GT:
     return ">";
   case NkmmCC::LE:
-    return ">=";
+    return "<=";
   }
   llvm_unreachable("Unknown condition code");
 }
